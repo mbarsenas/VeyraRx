@@ -1,10 +1,10 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 const actions = [
-  { title: "Track an order", text: "See delivery progress and prescription status.", href: "/orders", icon: "ðŸ“¦" },
-  { title: "Compare drug prices", text: "Explore medication pricing options before you fill.", href: "/pricing", icon: "ðŸ’Š" },
-  { title: "Coverage & benefits", text: "Understand your pharmacy benefits and plan details.", href: "/coverage", icon: "ðŸ›¡ï¸" },
-  { title: "Find a pharmacy", text: "Search participating pharmacies near you.", href: "/pharmacies", icon: "ðŸ“" },
+  { title: "Track an order", text: "See delivery progress and prescription status.", href: "/orders", icon: "BOX" },
+  { title: "Compare drug prices", text: "Explore medication pricing options before you fill.", href: "/pricing", icon: "RX" },
+  { title: "Coverage & benefits", text: "Understand your pharmacy benefits and plan details.", href: "/coverage", icon: "PLAN" },
+  { title: "Find a pharmacy", text: "Search participating pharmacies near you.", href: "/pharmacies", icon: "PIN" },
 ];
 
 export default function Home() {
@@ -24,7 +24,7 @@ export default function Home() {
               <Link className="button secondary" href="/pricing">Check drug pricing</Link>
             </div>
             <div className="trustLine">
-              <span>âœ“ Clear pricing</span><span>âœ“ Convenient access</span><span>âœ“ Member-first support</span>
+              <span>Clear pricing</span><span>Convenient access</span><span>Member-first support</span>
             </div>
           </div>
           <div className="heroCard">
@@ -32,7 +32,7 @@ export default function Home() {
             <h2>Everything you need, in one place.</h2>
             <div className="rxItem">
               <div className="pillIcon">Rx</div>
-              <div><strong>Atorvastatin 20 mg</strong><small>90-day supply Â· Processing</small></div>
+              <div><strong>Atorvastatin 20 mg</strong><small>90-day supply - Processing</small></div>
               <span className="status">On track</span>
             </div>
             <div className="rxItem">
@@ -40,7 +40,7 @@ export default function Home() {
               <div><strong>Lisinopril 10 mg</strong><small>Refill available</small></div>
               <span className="linkText">Refill</span>
             </div>
-            <Link className="dashboardLink" href="/dashboard">Open member dashboard â†’</Link>
+            <Link className="dashboardLink" href="/dashboard">Open member dashboard -&gt;</Link>
           </div>
         </div>
       </section>
@@ -57,7 +57,7 @@ export default function Home() {
                 <span className="actionIcon">{a.icon}</span>
                 <h3>{a.title}</h3>
                 <p>{a.text}</p>
-                <span className="cardArrow">Explore â†’</span>
+                <span className="cardArrow">Explore -&gt;</span>
               </Link>
             ))}
           </div>
@@ -106,4 +106,3 @@ export default function Home() {
     </>
   );
 }
-
