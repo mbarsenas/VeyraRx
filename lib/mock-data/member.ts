@@ -1,5 +1,11 @@
 export type PrescriptionStatus = "Processing" | "Refill available" | "Active";
 
+export type FillHistoryItem = {
+  date: string;
+  quantity: string;
+  cost: string;
+};
+
 export type Prescription = {
   id: string;
   slug: string;
@@ -18,6 +24,7 @@ export type Prescription = {
   estimatedCost: string;
   primaryActionLabel: string;
   primaryActionHref: string;
+  fillHistory: FillHistoryItem[];
 };
 
 export const member = {
@@ -60,6 +67,10 @@ export const prescriptions: Prescription[] = [
     estimatedCost: "$12.00",
     primaryActionLabel: "Track order",
     primaryActionHref: "/dashboard/orders/atorvastatin",
+    fillHistory: [
+      { date: "May 14, 2026", quantity: "90 tablets", cost: "$12.00" },
+      { date: "Feb 13, 2026", quantity: "90 tablets", cost: "$12.00" },
+    ],
   },
   {
     id: "rx-lisinopril-10",
@@ -79,6 +90,11 @@ export const prescriptions: Prescription[] = [
     estimatedCost: "$8.00",
     primaryActionLabel: "Refill now",
     primaryActionHref: "/dashboard/prescriptions/lisinopril-10mg/refill",
+    fillHistory: [
+      { date: "Jul 12, 2026", quantity: "30 tablets", cost: "$8.00" },
+      { date: "Jun 12, 2026", quantity: "30 tablets", cost: "$8.00" },
+      { date: "May 13, 2026", quantity: "30 tablets", cost: "$8.00" },
+    ],
   },
   {
     id: "rx-metformin-er-500",
@@ -98,8 +114,16 @@ export const prescriptions: Prescription[] = [
     estimatedCost: "$10.00",
     primaryActionLabel: "View details",
     primaryActionHref: "/dashboard/prescriptions/metformin-er-500mg",
+    fillHistory: [
+      { date: "Jun 20, 2026", quantity: "180 tablets", cost: "$10.00" },
+      { date: "Mar 22, 2026", quantity: "180 tablets", cost: "$10.00" },
+    ],
   },
 ];
+
+export function getPrescriptionBySlug(slug: string) {
+  return prescriptions.find((prescription) => prescription.slug === slug);
+}
 
 export const recentActivity = [
   { title: "Atorvastatin order is processing", time: "Today - 6:42 PM" },
