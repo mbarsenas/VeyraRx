@@ -13,7 +13,10 @@ export default function PrescriptionsPage() {
         <article className="infoCard">
           <h3>Atorvastatin 20 mg</h3>
           <p>90-day supply - Processing</p>
-          <Link className="textButton" href="/dashboard/orders/atorvastatin">Track order -&gt;</Link>
+          <div className="cardActionRow">
+            <Link className="textButton" href="/dashboard/prescriptions/atorvastatin-20mg">View details -&gt;</Link>
+            <Link className="textButton" href="/dashboard/orders/atorvastatin">Track order -&gt;</Link>
+          </div>
         </article>
 
         <article className="infoCard">
@@ -28,7 +31,7 @@ export default function PrescriptionsPage() {
         <article className="infoCard">
           <h3>Metformin ER 500 mg</h3>
           <p>90-day supply - Active</p>
-          <Link className="textButton" href="/dashboard/prescriptions">View details -&gt;</Link>
+          <Link className="textButton" href="/dashboard/prescriptions/metformin-er-500mg">View details -&gt;</Link>
         </article>
       </div>
 
