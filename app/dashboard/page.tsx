@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const prescriptions = [
-  { name: "Atorvastatin", strength: "20 mg", supply: "90-day supply", status: "Processing", action: "Track order" },
-  { name: "Lisinopril", strength: "10 mg", supply: "30-day supply", status: "Refill available", action: "Refill now" },
-  { name: "Metformin ER", strength: "500 mg", supply: "90-day supply", status: "Active", action: "View details" },
+  { name: "Atorvastatin", strength: "20 mg", supply: "90-day supply", status: "Processing" },
+  { name: "Lisinopril", strength: "10 mg", supply: "30-day supply", status: "Refill available" },
+  { name: "Metformin ER", strength: "500 mg", supply: "90-day supply", status: "Active" },
 ];
 
 export default function DashboardPage() {
@@ -20,10 +20,7 @@ export default function DashboardPage() {
 
         <div className="memberIdentity">
           <div className="avatar">MB</div>
-          <div>
-            <strong>Mark B.</strong>
-            <small>Member ID **** 4821</small>
-          </div>
+          <div><strong>Mark B.</strong><small>Member ID **** 4821</small></div>
         </div>
 
         <nav className="memberNav">
@@ -79,7 +76,19 @@ export default function DashboardPage() {
                     <div className="rxStatus">
                       <span className={rx.status === "Refill available" ? "statusChip attention" : rx.status === "Processing" ? "statusChip processing" : "statusChip"}>{rx.status}</span>
                     </div>
-                    {rx.name === "Lisinopril" ? (<Link className="textButton" href="/dashboard/prescriptions/lisinopril-10mg">View details -&gt;</Link>) : rx.name === "Atorvastatin" ? (<Link className="textButton" href="/dashboard/orders/atorvastatin">Track order -&gt;</Link>) : (<Link className="textButton" href="/dashboard/prescriptions">View details -&gt;</Link>)}
+                    {rx.name === "Lisinopril" ? (
+                      <div className="cardActionRow">
+                        <Link className="textButton" href="/dashboard/prescriptions/lisinopril-10mg">View details -&gt;</Link>
+                        <Link className="textButton" href="/dashboard/prescriptions/lisinopril-10mg/refill">Refill now -&gt;</Link>
+                      </div>
+                    ) : rx.name === "Atorvastatin" ? (
+                      <div className="cardActionRow">
+                        <Link className="textButton" href="/dashboard/prescriptions/atorvastatin-20mg">View details -&gt;</Link>
+                        <Link className="textButton" href="/dashboard/orders/atorvastatin">Track order -&gt;</Link>
+                      </div>
+                    ) : (
+                      <Link className="textButton" href="/dashboard/prescriptions/metformin-er-500mg">View details -&gt;</Link>
+                    )}
                   </div>
                 ))}
               </div>
