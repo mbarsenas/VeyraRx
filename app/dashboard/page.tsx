@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 const prescriptions = [
   { name: "Atorvastatin", strength: "20 mg", supply: "90-day supply", status: "Processing", action: "Track order" },
@@ -57,42 +57,17 @@ export default function DashboardPage() {
         </header>
 
         <section className="summaryGrid">
-          <article className="summaryCard">
-            <span className="summaryLabel">Active prescriptions</span>
-            <strong>3</strong>
-            <small>1 refill available</small>
-          </article>
-
-          <article className="summaryCard">
-            <span className="summaryLabel">Orders in progress</span>
-            <strong>1</strong>
-            <small>Estimated arrival Aug 14</small>
-          </article>
-
-          <article className="summaryCard">
-            <span className="summaryLabel">Plan deductible</span>
-            <strong>$620 / $1,500</strong>
-            <div className="progressTrack">
-              <span style={{ width: "41%" }} />
-            </div>
-            <small>41% met</small>
-          </article>
-
-          <article className="summaryCard">
-            <span className="summaryLabel">Potential savings</span>
-            <strong>$38</strong>
-            <small>Available this month</small>
-          </article>
+          <article className="summaryCard"><span className="summaryLabel">Active prescriptions</span><strong>3</strong><small>1 refill available</small></article>
+          <article className="summaryCard"><span className="summaryLabel">Orders in progress</span><strong>1</strong><small>Estimated arrival Aug 14</small></article>
+          <article className="summaryCard"><span className="summaryLabel">Plan deductible</span><strong>$620 / $1,500</strong><div className="progressTrack"><span style={{ width: "41%" }} /></div><small>41% met</small></article>
+          <article className="summaryCard"><span className="summaryLabel">Potential savings</span><strong>$38</strong><small>Available this month</small></article>
         </section>
 
         <section className="dashboardGrid">
           <div className="dashboardMain">
             <article className="panelCard">
               <div className="panelHeader">
-                <div>
-                  <span className="eyebrow">My prescriptions</span>
-                  <h2>Prescription overview</h2>
-                </div>
+                <div><span className="eyebrow">My prescriptions</span><h2>Prescription overview</h2></div>
                 <Link href="/dashboard/prescriptions">View all</Link>
               </div>
 
@@ -100,117 +75,45 @@ export default function DashboardPage() {
                 {prescriptions.map((rx) => (
                   <div className="prescriptionRow" key={rx.name}>
                     <div className="rxBadge">Rx</div>
-
-                    <div className="rxDetails">
-                      <strong>{rx.name} {rx.strength}</strong>
-                      <span>{rx.supply}</span>
-                    </div>
-
+                    <div className="rxDetails"><strong>{rx.name} {rx.strength}</strong><span>{rx.supply}</span></div>
                     <div className="rxStatus">
-                      <span
-                        className={
-                          rx.status === "Refill available"
-                            ? "statusChip attention"
-                            : rx.status === "Processing"
-                            ? "statusChip processing"
-                            : "statusChip"
-                        }
-                      >
-                        {rx.status}
-                      </span>
+                      <span className={rx.status === "Refill available" ? "statusChip attention" : rx.status === "Processing" ? "statusChip processing" : "statusChip"}>{rx.status}</span>
                     </div>
-
-                    {rx.name === "Lisinopril" ? (<Link className="textButton" href="/dashboard/prescriptions/lisinopril-10mg/refill">Refill now -&gt;</Link>) : rx.name === "Atorvastatin" ? (<Link className="textButton" href="/dashboard/orders/atorvastatin">Track order -&gt;</Link>) : (<Link className="textButton" href="/dashboard/prescriptions">View details -&gt;</Link>)}
+                    {rx.name === "Lisinopril" ? (<Link className="textButton" href="/dashboard/prescriptions/lisinopril-10mg">View details -&gt;</Link>) : rx.name === "Atorvastatin" ? (<Link className="textButton" href="/dashboard/orders/atorvastatin">Track order -&gt;</Link>) : (<Link className="textButton" href="/dashboard/prescriptions">View details -&gt;</Link>)}
                   </div>
                 ))}
               </div>
             </article>
 
             <article className="panelCard">
-              <div className="panelHeader">
-                <div>
-                  <span className="eyebrow">Recent activity</span>
-                  <h2>Orders & updates</h2>
-                </div>
-              </div>
-
+              <div className="panelHeader"><div><span className="eyebrow">Recent activity</span><h2>Orders & updates</h2></div></div>
               <div className="timeline">
-                <div className="timelineItem">
-                  <span className="timelineDot"></span>
-                  <div>
-                    <strong>Atorvastatin order is processing</strong>
-                    <small>Today - 6:42 PM</small>
-                  </div>
-                </div>
-
-                <div className="timelineItem">
-                  <span className="timelineDot"></span>
-                  <div>
-                    <strong>Lisinopril refill became available</strong>
-                    <small>Aug 10 - 9:15 AM</small>
-                  </div>
-                </div>
-
-                <div className="timelineItem">
-                  <span className="timelineDot"></span>
-                  <div>
-                    <strong>Preferred pharmacy updated</strong>
-                    <small>Aug 4 - 2:03 PM</small>
-                  </div>
-                </div>
+                <div className="timelineItem"><span className="timelineDot"></span><div><strong>Atorvastatin order is processing</strong><small>Today - 6:42 PM</small></div></div>
+                <div className="timelineItem"><span className="timelineDot"></span><div><strong>Lisinopril refill became available</strong><small>Aug 10 - 9:15 AM</small></div></div>
+                <div className="timelineItem"><span className="timelineDot"></span><div><strong>Preferred pharmacy updated</strong><small>Aug 4 - 2:03 PM</small></div></div>
               </div>
             </article>
           </div>
 
           <aside className="dashboardRail">
             <article className="panelCard benefitCard">
-              <span className="eyebrow">Your plan</span>
-              <h2>Pharmacy benefits</h2>
-
-              <div className="benefitItem">
-                <span>Plan</span>
-                <strong>VeyraChoice Plus</strong>
-              </div>
-
-              <div className="benefitItem">
-                <span>Rx BIN</span>
-                <strong>610014</strong>
-              </div>
-
-              <div className="benefitItem">
-                <span>Rx Group</span>
-                <strong>VYR365</strong>
-              </div>
-
-              <div className="benefitItem">
-                <span>Effective date</span>
-                <strong>Jan 1, 2026</strong>
-              </div>
-
-              <Link className="button primary full" href="/coverage">
-                View benefit details
-              </Link>
+              <span className="eyebrow">Your plan</span><h2>Pharmacy benefits</h2>
+              <div className="benefitItem"><span>Plan</span><strong>VeyraChoice Plus</strong></div>
+              <div className="benefitItem"><span>Rx BIN</span><strong>610014</strong></div>
+              <div className="benefitItem"><span>Rx Group</span><strong>VYR365</strong></div>
+              <div className="benefitItem"><span>Effective date</span><strong>Jan 1, 2026</strong></div>
+              <Link className="button primary full" href="/coverage">View benefit details</Link>
             </article>
 
             <article className="panelCard">
-              <span className="eyebrow">Preferred pharmacy</span>
-              <h2>H-E-B Pharmacy</h2>
-              <p className="railText">
-                San Antonio, TX
-                <br />
-                2.4 miles away
-              </p>
-              <Link href="/pharmacies" className="textButton">
-                Find another pharmacy -&gt;
-              </Link>
+              <span className="eyebrow">Preferred pharmacy</span><h2>H-E-B Pharmacy</h2>
+              <p className="railText">San Antonio, TX<br/>2.4 miles away</p>
+              <Link href="/pharmacies" className="textButton">Find another pharmacy -&gt;</Link>
             </article>
 
             <article className="panelCard savingsCard">
-              <span className="eyebrow">Savings opportunity</span>
-              <h2>Save on a 90-day supply</h2>
-              <p className="railText">
-                Switching one maintenance medication to a 90-day fill may reduce your estimated monthly cost.
-              </p>
+              <span className="eyebrow">Savings opportunity</span><h2>Save on a 90-day supply</h2>
+              <p className="railText">Switching one maintenance medication to a 90-day fill may reduce your estimated monthly cost.</p>
               <button className="button secondary full">Review savings</button>
             </article>
           </aside>
@@ -219,4 +122,3 @@ export default function DashboardPage() {
     </main>
   );
 }
-
