@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { prescriptions } from "@/lib/mock-data/member";
 
 export default function PrescriptionsPage() {
   return (
@@ -8,29 +9,22 @@ export default function PrescriptionsPage() {
       <p className="leadSmall">View active medications, refill status and recent prescription activity.</p>
 
       <div className="infoGrid">
-        <article className="infoCard">
-          <h3>Atorvastatin 20 mg</h3>
-          <p>90-day supply - Processing</p>
-          <div className="cardActionRow">
-            <Link className="textButton" href="/dashboard/prescriptions/atorvastatin-20mg">View details -&gt;</Link>
-            <Link className="textButton" href="/dashboard/orders/atorvastatin">Track order -&gt;</Link>
-          </div>
-        </article>
-
-        <article className="infoCard">
-          <h3>Lisinopril 10 mg</h3>
-          <p>30-day supply - Refill available</p>
-          <div className="cardActionRow">
-            <Link className="textButton" href="/dashboard/prescriptions/lisinopril-10mg">View details -&gt;</Link>
-            <Link className="textButton" href="/dashboard/prescriptions/lisinopril-10mg/refill">Refill now -&gt;</Link>
-          </div>
-        </article>
-
-        <article className="infoCard">
-          <h3>Metformin ER 500 mg</h3>
-          <p>90-day supply - Active</p>
-          <Link className="textButton" href="/dashboard/prescriptions/metformin-er-500mg">View details -&gt;</Link>
-        </article>
+        {prescriptions.map((prescription) => (
+          <article className="infoCard" key={prescription.id}>
+            <h3>{prescription.name} {prescription.strength}</h3>
+            <p>{prescription.supply} - {prescription.status}</p>
+            <div className="cardActionRow">
+              <Link className="textButton" href={`/dashboard/prescriptions/${prescription.slug}`}>
+                View details -&gt;
+              </Link>
+              {prescription.primaryActionLabel !== "View details" && (
+                <Link className="textButton" href={prescription.primaryActionHref}>
+                  {prescription.primaryActionLabel} -&gt;
+                </Link>
+              )}
+            </div>
+          </article>
+        ))}
       </div>
 
       <p style={{ marginTop: "30px" }}>
