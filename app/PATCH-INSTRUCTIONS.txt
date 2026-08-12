@@ -1,0 +1,17 @@
+VeyraRx Member Dashboard Build
+
+1. Copy the app/dashboard folder into your VeyraRx project root:
+   C:\Users\Mark\Documents\VeyraRx-GitHub\app\dashboard
+
+2. Open app\globals.css and append the contents of dashboard-styles.css to the bottom.
+
+3. Update the "Open member dashboard" link on the homepage to:
+   href="/dashboard"
+
+4. Run:
+   npm run dev
+
+5. Open:
+   http://localhost:3000/dashboard
+
+This is UI-only demo data. It does not store PHI or connect to pharmacy systems.
