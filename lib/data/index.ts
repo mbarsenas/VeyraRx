@@ -1,5 +1,7 @@
 import type { MemberRepository } from "@/lib/data/member-repository";
 import { mockMemberRepository } from "@/lib/data/mock-member-repository";
+import { createPostgresMemberRepository } from "@/lib/data/postgres-member-repository";
+import { neonSqlExecutor } from "@/lib/data/neon-sql";
 
 export type DataProvider = "mock" | "postgres";
 
@@ -10,7 +12,10 @@ export function getMemberRepository(): MemberRepository {
     return mockMemberRepository;
   }
 
-  throw new Error(
-    `Data provider '${provider}' is not configured. Set VEYRA_DATA_PROVIDER=mock until the PostgreSQL adapter is installed.`
-  );
+  if (provider === "postgres") {
+    const memberId = process.env.VEYRA_MEMBER_ID ?? "member-demo-001";
+    return createPostgresMemberRepository(neonSqlExecutor, memberId);
+  }
+
+  throw new Error(`Unsupported data provider '${provider}'.`);
 }
