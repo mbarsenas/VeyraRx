@@ -2,16 +2,14 @@ import MemberTopbar from "@/components/member/MemberTopbar";
 import ProfileSettings from "@/components/member/ProfileSettings";
 import { getCurrentMemberSession } from "@/lib/auth/session";
 import { getMemberRepository } from "@/lib/data";
-import { memberProfile } from "@/lib/mock-data/profile";
+import { getAuthenticatedMemberProfile } from "@/lib/data/member-profile";
 
 export default async function ProfilePage() {
   const session = await getCurrentMemberSession();
-  const member = await getMemberRepository().getMemberSummary();
-
-  const initialProfile = {
-    ...memberProfile,
-    email: session?.email ?? memberProfile.email,
-  };
+  const [member, initialProfile] = await Promise.all([
+    getMemberRepository().getMemberSummary(),
+    getAuthenticatedMemberProfile(),
+  ]);
 
   return (
     <>
