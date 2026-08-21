@@ -1,9 +1,22 @@
 import MemberTopbar from "@/components/member/MemberTopbar";
 import ProfileSettings from "@/components/member/ProfileSettings";
-import { member } from "@/lib/mock-data/member";
+import { getCurrentMemberSession } from "@/lib/auth/session";
+import { getMemberRepository } from "@/lib/data";
 import { memberProfile } from "@/lib/mock-data/profile";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const session = await getCurrentMemberSession();
+  if (!session) {
+    throw new Error("An authenticated member session is required.");
+  }
+
+  const repository = getMemberRepository();
+  const member = await repository.getMemberSummary();
+  const initialProfile = {
+    ...memberProfile,
+    email: session.email,
+  };
+
   return (
     <>
       <MemberTopbar
@@ -20,19 +33,19 @@ export default function ProfilePage() {
           <div className="benefitItem"><span>Member ID</span><strong>**** {member.memberIdLast4}</strong></div>
           <div className="benefitItem"><span>Plan</span><strong>{member.plan.name}</strong></div>
           <div className="benefitItem"><span>Effective date</span><strong>{member.plan.effectiveDate}</strong></div>
+          <div className="benefitItem"><span>Sign-in email</span><strong>{session.email}</strong></div>
         </article>
 
         <article className="panelCard">
           <span className="eyebrow">Security</span>
           <h2>Sign-in & account security</h2>
-          <div className="benefitItem"><span>Password</span><strong>Last changed 42 days ago</strong></div>
-          <div className="benefitItem"><span>Two-step verification</span><strong>Enabled</strong></div>
-          <div className="benefitItem"><span>Recent sign-in</span><strong>San Antonio, TX</strong></div>
-          <button className="button secondary" style={{ marginTop: "18px" }}>Manage security</button>
+          <div className="benefitItem"><span>Account</span><strong>{session.displayName}</strong></div>
+          <div className="benefitItem"><span>Email</span><strong>{session.email}</strong></div>
+          <div className="benefitItem"><span>Authentication</span><strong>Neon Auth session active</strong></div>
         </article>
       </section>
 
-      <ProfileSettings initialProfile={memberProfile} />
+      <ProfileSettings initialProfile={initialProfile} />
     </>
   );
 }
