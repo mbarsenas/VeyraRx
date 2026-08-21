@@ -1,8 +1,9 @@
+import { notFound } from "next/navigation";
 import OrderDetails from "@/components/member/OrderDetails";
-import { getOrderBySlug } from "@/lib/mock-data/orders";
+import { getAuthenticatedMemberOrderBySlug } from "@/lib/data/member-orders";
 
-export default function LisinoprilOrderPage() {
-  const order = getOrderBySlug("lisinopril-jul-2026");
-  if (!order) return null;
+export default async function LisinoprilOrderPage() {
+  const order = await getAuthenticatedMemberOrderBySlug("lisinopril-jul-2026");
+  if (!order) notFound();
   return <OrderDetails order={order} />;
 }

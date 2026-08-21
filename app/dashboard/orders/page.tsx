@@ -1,10 +1,11 @@
 import MemberTopbar from "@/components/member/MemberTopbar";
 import OrderCard from "@/components/member/OrderCard";
-import { orders } from "@/lib/mock-data/orders";
+import { getAuthenticatedMemberOrders } from "@/lib/data/member-orders";
 
-export default function MemberOrdersPage() {
-  const activeOrders = orders.filter((order) => order.status !== "Delivered");
-  const completedOrders = orders.filter((order) => order.status === "Delivered");
+export default async function MemberOrdersPage() {
+  const orders = await getAuthenticatedMemberOrders();
+  const activeOrders = orders.filter((order) => order.status !== "Delivered" && order.status !== "Cancelled");
+  const completedOrders = orders.filter((order) => order.status === "Delivered" || order.status === "Cancelled");
 
   return (
     <>
@@ -16,7 +17,9 @@ export default function MemberOrdersPage() {
           <span className="ordersCount">{activeOrders.length} active</span>
         </div>
         <div className="memberPageGrid">
-          {activeOrders.map((order) => <OrderCard order={order} key={order.id} />)}
+          {activeOrders.length > 0
+            ? activeOrders.map((order) => <OrderCard order={order} key={order.id} />)
+            : <article className="panelCard"><p className="railText">You have no active medication orders.</p></article>}
         </div>
       </section>
 
@@ -26,7 +29,9 @@ export default function MemberOrdersPage() {
           <span className="ordersCount">{completedOrders.length} recent</span>
         </div>
         <div className="memberPageGrid">
-          {completedOrders.map((order) => <OrderCard order={order} key={order.id} />)}
+          {completedOrders.length > 0
+            ? completedOrders.map((order) => <OrderCard order={order} key={order.id} />)
+            : <article className="panelCard"><p className="railText">No completed medication orders yet.</p></article>}
         </div>
       </section>
     </>
