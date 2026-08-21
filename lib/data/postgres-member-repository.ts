@@ -1,4 +1,5 @@
 import type { ActivityItem, MemberSummary, Prescription } from "@/lib/domain/member";
+import type { MemberBenefits } from "@/lib/domain/benefits";
 import type { MemberRepository } from "@/lib/data/member-repository";
 
 export type SqlExecutor = <T = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<T[]>;
@@ -42,6 +43,21 @@ type PrescriptionRow = {
 
 type FillRow = { prescription_id: string; fill_date: string; quantity: string; cost_cents: number };
 type ActivityRow = { title: string; display_time: string };
+type BenefitRow = {
+  deductible_used_cents: number;
+  deductible_total_cents: number;
+  out_of_pocket_used_cents: number;
+  out_of_pocket_max_cents: number;
+  plan_year_label: string;
+  plan_id: string;
+};
+type CoverageTierRow = {
+  name: string;
+  description: string;
+  retail_30_label: string;
+  retail_90_label: string;
+  home_90_label: string;
+};
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const dateLabel = (value: string | null) => value ?? "Not available";
@@ -154,6 +170,44 @@ export function createPostgresMemberRepository(sql: SqlExecutor, memberId: strin
         [memberId]
       );
       return rows.map((row) => ({ title: row.title, time: row.display_time }));
+    },
+
+    async getBenefits(): Promise<MemberBenefits> {
+      const rows = await sql<BenefitRow>(
+        `SELECT b.deductible_used_cents, b.deductible_total_cents,
+                b.out_of_pocket_used_cents, b.out_of_pocket_max_cents,
+                b.plan_year_label, m.plan_id
+           FROM member_benefits b
+           JOIN members m ON m.id = b.member_id
+          WHERE b.member_id = $1
+          LIMIT 1`,
+        [memberId]
+      );
+      const row = rows[0];
+      if (!row) throw new Error(`Benefits were not found for member '${memberId}'.`);
+
+      const tiers = await sql<CoverageTierRow>(
+        `SELECT name, description, retail_30_label, retail_90_label, home_90_label
+           FROM plan_coverage_tiers
+          WHERE plan_id = $1
+          ORDER BY sort_order, name`,
+        [row.plan_id]
+      );
+
+      return {
+        deductibleUsed: row.deductible_used_cents / 100,
+        deductibleTotal: row.deductible_total_cents / 100,
+        outOfPocketUsed: row.out_of_pocket_used_cents / 100,
+        outOfPocketMax: row.out_of_pocket_max_cents / 100,
+        planYear: row.plan_year_label,
+        coverageTiers: tiers.map((tier) => ({
+          name: tier.name,
+          description: tier.description,
+          retail30: tier.retail_30_label,
+          retail90: tier.retail_90_label,
+          home90: tier.home_90_label,
+        })),
+      };
     },
   };
 }
