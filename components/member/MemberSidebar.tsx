@@ -1,7 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { member } from "@/lib/mock-data/member";
 
+const navItems = [
+  { href: "/dashboard", label: "Overview", exact: true },
+  { href: "/dashboard/prescriptions", label: "Prescriptions" },
+  { href: "/dashboard/orders", label: "Orders" },
+  { href: "/dashboard/benefits", label: "Benefits & coverage" },
+  { href: "/dashboard/pharmacy", label: "Pharmacy" },
+  { href: "/dashboard/messages", label: "Messages" },
+  { href: "/dashboard/profile", label: "Profile" },
+];
+
 export default function MemberSidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className="memberSidebar">
       <Link href="/" className="memberBrand">
@@ -20,13 +35,10 @@ export default function MemberSidebar() {
       </div>
 
       <nav className="memberNav">
-        <Link href="/dashboard">Overview</Link>
-        <Link href="/dashboard/prescriptions">Prescriptions</Link>
-        <Link href="/orders">Orders</Link>
-        <Link href="/coverage">Benefits & coverage</Link>
-        <Link href="/pharmacies">Pharmacy</Link>
-        <Link href="/dashboard/messages">Messages</Link>
-        <Link href="/dashboard/profile">Profile</Link>
+        {navItems.map((item) => {
+          const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+          return <Link key={item.href} className={active ? "active" : undefined} href={item.href}>{item.label}</Link>;
+        })}
       </nav>
 
       <div className="memberHelp">
