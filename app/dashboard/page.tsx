@@ -5,9 +5,15 @@ import PrescriptionRow from "@/components/member/PrescriptionRow";
 import PlanCard from "@/components/member/PlanCard";
 import PharmacyCard from "@/components/member/PharmacyCard";
 import ActivityTimeline from "@/components/member/ActivityTimeline";
-import { member, prescriptions } from "@/lib/mock-data/member";
+import { getMemberRepository } from "@/lib/data";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const repository = getMemberRepository();
+  const [member, prescriptions] = await Promise.all([
+    repository.getMemberSummary(),
+    repository.getPrescriptions(),
+  ]);
+
   const deductiblePercent = Math.round((member.plan.deductibleUsed / member.plan.deductibleTotal) * 100);
   const refillCount = prescriptions.filter((rx) => rx.status === "Refill available").length;
   const processingCount = prescriptions.filter((rx) => rx.status === "Processing").length;
