@@ -53,7 +53,7 @@ function ActionIcon({ type }: { type: "package" | "pill" | "card" | "pin" }) {
 
 const actions = [
   { title: "Track an order", text: "See delivery progress and prescription status.", href: "/orders", icon: "package" as const },
-  { title: "Compare drug prices", text: "Explore medication pricing options before you fill.", href: "/pricing", icon: "pill" as const },
+  { title: "Drug pricing", text: "Explore medication pricing options before you fill.", href: "/pricing", icon: "pill" as const },
   { title: "Coverage & benefits", text: "Understand your pharmacy benefits and plan details.", href: "/coverage", icon: "card" as const },
   { title: "Find a pharmacy", text: "Search participating pharmacies near you.", href: "/pharmacies", icon: "pin" as const },
 ];
@@ -72,7 +72,7 @@ export default function Home() {
             </p>
             <div className="buttonRow">
               <Link className="button primary" href="/signin">Sign in</Link>
-              <Link className="button secondary" href="/pricing">Check drug pricing</Link>
+              <Link className="button secondary" href="/pricing">View drug pricing</Link>
             </div>
             <div className="trustLine">
               <span>Clear pricing</span><span>Convenient access</span><span>Member-first support</span>
@@ -104,7 +104,7 @@ export default function Home() {
                 <span className="actionIcon"><ActionIcon type={a.icon} /></span>
                 <h3>{a.title}</h3>
                 <p>{a.text}</p>
-                <span className="cardArrow">Explore -&gt;</span>
+                <span className="cardArrow">Explore <span aria-hidden="true">→</span></span>
               </Link>
             ))}
           </div>
@@ -113,9 +113,15 @@ export default function Home() {
 
       <section className="splitSection">
         <div className="shell splitGrid">
-          <div className="deliveryVisual">
+          <div className="deliveryVisual" aria-hidden="true">
             <div className="deliveryBadge">Free standard delivery</div>
-            <div className="package">Veyra<span>Rx</span></div>
+            <div className="deliveryPackage">
+              <span className="deliveryPackageMark">V</span>
+              <span className="deliveryPackageName">VeyraRx</span>
+              <small>Home delivery</small>
+            </div>
+            <div className="deliveryPill deliveryPillOne" />
+            <div className="deliveryPill deliveryPillTwo" />
           </div>
           <div>
             <span className="eyebrow">Home delivery</span>
@@ -138,7 +144,7 @@ export default function Home() {
           <div className="promiseGrid">
             <article><div>01</div><h3>Affordable</h3><p>Tools that make medication costs easier to understand and compare.</p></article>
             <article><div>02</div><h3>Accessible</h3><p>Simple digital access to prescriptions, pharmacies, benefits and support.</p></article>
-            <article><div>03</div><h3>Supportive</h3><p>Guidance when you have questions about your medications or pharmacy benefit.</p></article>
+            <article><div>03</div><h3>Supportive</h3><p>Guidance when you have questions about your medications or pharmacy benefits.</p></article>
           </div>
         </div>
       </section>
