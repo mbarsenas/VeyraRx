@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const actions = [
@@ -10,9 +11,9 @@ const actions = [
 export default function Home() {
   return (
     <>
-      <section className="hero">
-        <div className="shell heroGrid">
-          <div>
+      <section className="hero heroPhotoSection">
+        <div className="shell heroPhotoGrid">
+          <div className="heroCopy">
             <span className="eyebrow">Pharmacy benefits made simpler</span>
             <h1>Medication access that puts people first.</h1>
             <p className="lead">
@@ -27,20 +28,16 @@ export default function Home() {
               <span>Clear pricing</span><span>Convenient access</span><span>Member-first support</span>
             </div>
           </div>
-          <div className="heroCard">
-            <span className="miniLabel">YOUR PRESCRIPTIONS</span>
-            <h2>Everything you need, in one place.</h2>
-            <div className="rxItem">
-              <div className="pillIcon">Rx</div>
-              <div><strong>Atorvastatin 20 mg</strong><small>90-day supply - Processing</small></div>
-              <span className="status">On track</span>
-            </div>
-            <div className="rxItem">
-              <div className="pillIcon">Rx</div>
-              <div><strong>Lisinopril 10 mg</strong><small>Refill available</small></div>
-              <span className="linkText">Refill</span>
-            </div>
-            <Link className="dashboardLink" href="/dashboard">Open member dashboard -&gt;</Link>
+
+          <div className="heroPhotoWrap" aria-hidden="true">
+            <Image
+              src="/veyrarx-family-hero.png"
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 900px) 100vw, 52vw"
+              className="heroPhoto"
+            />
           </div>
         </div>
       </section>
