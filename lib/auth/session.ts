@@ -1,3 +1,5 @@
+import { auth } from "@/lib/auth/server";
+
 export type MemberSession = {
   memberId: string;
   email: string;
@@ -11,13 +13,18 @@ export async function getCurrentMemberSession(): Promise<MemberSession | null> {
 
   if (mode === "demo") {
     return {
-      memberId: "demo-member-4821",
+      memberId: "member-demo-001",
       email: "mark@example.com",
       displayName: "Mark B.",
     };
   }
 
-  throw new Error(
-    "Production authentication is not configured. Install and configure the production identity provider before setting VEYRA_AUTH_MODE=production."
-  );
+  const { data: session } = await auth.getSession();
+  if (!session?.user) return null;
+
+  return {
+    memberId: session.user.id,
+    email: session.user.email,
+    displayName: session.user.name || session.user.email,
+  };
 }
