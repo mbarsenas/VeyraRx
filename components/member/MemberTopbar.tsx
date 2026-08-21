@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { signOutMember } from "@/app/dashboard/auth-actions";
 
 type MemberTopbarProps = {
   eyebrow?: string;
@@ -21,7 +21,7 @@ export default function MemberTopbar({ eyebrow = "Member dashboard", title, desc
             <path d="M10 21h4" />
           </svg>
         </button>
-        <Link className="button secondary" href="/signin">Sign out</Link>
+        <form action={signOutMember}><button className="button secondary" type="submit">Sign out</button></form>
       </div>
     </header>
   );
