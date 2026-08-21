@@ -1,11 +1,61 @@
 import Image from "next/image";
 import Link from "next/link";
 
+function ActionIcon({ type }: { type: "package" | "pill" | "card" | "pin" }) {
+  const common = {
+    width: 32,
+    height: 32,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+
+  if (type === "package") {
+    return (
+      <svg {...common}>
+        <path d="M4 7.5 12 3l8 4.5-8 4.5-8-4.5Z" />
+        <path d="M4 7.5V16.5L12 21l8-4.5V7.5" />
+        <path d="M12 12v9" />
+      </svg>
+    );
+  }
+
+  if (type === "pill") {
+    return (
+      <svg {...common}>
+        <path d="m7.2 16.8 9.6-9.6a4.24 4.24 0 0 0-6-6l-9.6 9.6a4.24 4.24 0 0 0 6 6Z" transform="translate(3 3) scale(.72)" />
+        <path d="m9 15 6-6" />
+      </svg>
+    );
+  }
+
+  if (type === "card") {
+    return (
+      <svg {...common}>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="M3 9h18" />
+        <path d="M7 14h4" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...common}>
+      <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
 const actions = [
-  { title: "Track an order", text: "See delivery progress and prescription status.", href: "/orders", icon: "BOX" },
-  { title: "Compare drug prices", text: "Explore medication pricing options before you fill.", href: "/pricing", icon: "RX" },
-  { title: "Coverage & benefits", text: "Understand your pharmacy benefits and plan details.", href: "/coverage", icon: "PLAN" },
-  { title: "Find a pharmacy", text: "Search participating pharmacies near you.", href: "/pharmacies", icon: "PIN" },
+  { title: "Track an order", text: "See delivery progress and prescription status.", href: "/orders", icon: "package" as const },
+  { title: "Compare drug prices", text: "Explore medication pricing options before you fill.", href: "/pricing", icon: "pill" as const },
+  { title: "Coverage & benefits", text: "Understand your pharmacy benefits and plan details.", href: "/coverage", icon: "card" as const },
+  { title: "Find a pharmacy", text: "Search participating pharmacies near you.", href: "/pharmacies", icon: "pin" as const },
 ];
 
 export default function Home() {
@@ -51,7 +101,7 @@ export default function Home() {
           <div className="actionGrid">
             {actions.map((a) => (
               <Link className="actionCard" href={a.href} key={a.title}>
-                <span className="actionIcon">{a.icon}</span>
+                <span className="actionIcon"><ActionIcon type={a.icon} /></span>
                 <h3>{a.title}</h3>
                 <p>{a.text}</p>
                 <span className="cardArrow">Explore -&gt;</span>
