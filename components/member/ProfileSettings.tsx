@@ -1,19 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import type { MemberProfile, CommunicationPreference } from "@/lib/mock-data/profile";
+import { useState, useTransition } from "react";
+import type { MemberProfile, CommunicationPreference } from "@/lib/domain/profile";
+import { saveMemberProfile } from "@/app/dashboard/profile/actions";
 
 export default function ProfileSettings({ initialProfile }: { initialProfile: MemberProfile }) {
   const [profile, setProfile] = useState(initialProfile);
-  const [saved, setSaved] = useState(false);
+  const [status, setStatus] = useState<string>("");
+  const [isPending, startTransition] = useTransition();
 
   function update<K extends keyof MemberProfile>(key: K, value: MemberProfile[K]) {
     setProfile((current) => ({ ...current, [key]: value }));
-    setSaved(false);
+    setStatus("");
   }
 
   function saveProfile() {
-    setSaved(true);
+    setStatus("");
+    startTransition(async () => {
+      const result = await saveMemberProfile(profile);
+      setStatus(result.message);
+    });
   }
 
   return (
@@ -23,7 +29,8 @@ export default function ProfileSettings({ initialProfile }: { initialProfile: Me
         <h2>Contact details</h2>
 
         <label>Email</label>
-        <input value={profile.email} onChange={(e) => update("email", e.target.value)} />
+        <input value={profile.email} readOnly aria-readonly="true" />
+        <small className="railText">Sign-in email is managed by your account authentication settings.</small>
 
         <label>Phone</label>
         <input value={profile.phone} onChange={(e) => update("phone", e.target.value)} />
@@ -39,7 +46,7 @@ export default function ProfileSettings({ initialProfile }: { initialProfile: Me
           </div>
           <div>
             <label>State</label>
-            <input value={profile.state} onChange={(e) => update("state", e.target.value)} />
+            <input value={profile.state} maxLength={2} onChange={(e) => update("state", e.target.value)} />
           </div>
         </div>
 
@@ -77,11 +84,13 @@ export default function ProfileSettings({ initialProfile }: { initialProfile: Me
           </label>
         </div>
 
-        <button className="button primary" onClick={saveProfile} style={{ marginTop: "22px" }}>Save changes</button>
-        {saved && <p className="railText" style={{ marginTop: "12px" }}>Saved for this prototype session.</p>}
+        <button className="button primary" onClick={saveProfile} disabled={isPending} style={{ marginTop: "22px" }}>
+          {isPending ? "Saving..." : "Save changes"}
+        </button>
+        {status && <p className="railText" style={{ marginTop: "12px" }}>{status}</p>}
 
         <div className="workflowNotice" style={{ marginTop: "24px" }}>
-          Prototype account settings only. Changes are not stored in a production member record.
+          Changes are stored in your linked VeyraRx member record.
         </div>
       </section>
     </div>
