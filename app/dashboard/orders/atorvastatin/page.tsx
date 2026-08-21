@@ -1,8 +1,9 @@
+import { notFound } from "next/navigation";
 import OrderDetails from "@/components/member/OrderDetails";
-import { getOrderBySlug } from "@/lib/mock-data/orders";
+import { getAuthenticatedMemberOrderBySlug } from "@/lib/data/member-orders";
 
-export default function AtorvastatinOrderPage() {
-  const order = getOrderBySlug("atorvastatin");
-  if (!order) return null;
+export default async function AtorvastatinOrderPage() {
+  const order = await getAuthenticatedMemberOrderBySlug("atorvastatin");
+  if (!order) notFound();
   return <OrderDetails order={order} />;
 }
