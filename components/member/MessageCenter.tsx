@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { MemberMessage } from "@/lib/mock-data/messages";
+import { useMemo, useState, useTransition } from "react";
+import type { MemberMessage } from "@/lib/domain/message";
+import { markMessageRead } from "@/app/dashboard/messages/actions";
 import styles from "./MessageCenter.module.css";
 
 export default function MessageCenter({ initialMessages }: { initialMessages: MemberMessage[] }) {
   const [selectedId, setSelectedId] = useState(initialMessages[0]?.id ?? "");
   const [readIds, setReadIds] = useState(() => new Set(initialMessages.filter((m) => !m.unread).map((m) => m.id)));
   const [filter, setFilter] = useState<"All" | MemberMessage["category"]>("All");
+  const [isPending, startTransition] = useTransition();
 
   const filtered = useMemo(
     () => initialMessages.filter((message) => filter === "All" || message.category === filter),
@@ -19,7 +21,20 @@ export default function MessageCenter({ initialMessages }: { initialMessages: Me
 
   function openMessage(id: string) {
     setSelectedId(id);
+
+    if (readIds.has(id)) return;
+
     setReadIds((current) => new Set(current).add(id));
+    startTransition(async () => {
+      const result = await markMessageRead(id);
+      if (!result.ok) {
+        setReadIds((current) => {
+          const next = new Set(current);
+          next.delete(id);
+          return next;
+        });
+      }
+    });
   }
 
   return (
@@ -39,6 +54,7 @@ export default function MessageCenter({ initialMessages }: { initialMessages: Me
               key={item}
               className={`${styles.messageFilter} ${filter === item ? styles.active : ""}`}
               onClick={() => setFilter(item)}
+              disabled={isPending}
             >
               {item}
             </button>
@@ -77,7 +93,7 @@ export default function MessageCenter({ initialMessages }: { initialMessages: Me
               <span>Date</span><strong>{selected.date}</strong>
             </div>
             <p className={styles.messageBody}>{selected.body}</p>
-            <div className="workflowNotice">Prototype secure messaging only. No PHI or live support message was transmitted.</div>
+            <div className="workflowNotice">Messages are stored in your linked VeyraRx member record.</div>
           </>
         ) : (
           <div className={styles.empty}><h2>Select a message</h2><p>Choose a message from the inbox to view it.</p></div>
