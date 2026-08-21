@@ -1,25 +1,34 @@
-import Link from "next/link";
 import MemberTopbar from "@/components/member/MemberTopbar";
+import OrderCard from "@/components/member/OrderCard";
+import { orders } from "@/lib/mock-data/orders";
 
 export default function MemberOrdersPage() {
+  const activeOrders = orders.filter((order) => order.status !== "Delivered");
+  const completedOrders = orders.filter((order) => order.status === "Delivered");
+
   return (
     <>
       <MemberTopbar eyebrow="Orders" title="Your medication orders" description="Track active shipments and review recent prescription orders." />
-      <div className="memberPageGrid">
-        <article className="panelCard">
-          <div className="panelHeader"><div><span className="eyebrow">In progress</span><h2>Atorvastatin 20 mg</h2></div><span className="statusChip processing">Processing</span></div>
-          <div className="benefitItem"><span>Order</span><strong>VYR-883921</strong></div>
-          <div className="benefitItem"><span>Supply</span><strong>90 days</strong></div>
-          <div className="benefitItem"><span>Estimated arrival</span><strong>Aug 14</strong></div>
-          <Link className="button primary" href="/dashboard/orders/atorvastatin">Track order</Link>
-        </article>
-        <article className="panelCard">
-          <span className="eyebrow">Recent orders</span><h2>Order history</h2>
-          <div className="benefitItem"><span>Jun 28, 2026</span><strong>Metformin ER 500 mg</strong></div>
-          <div className="benefitItem"><span>Jul 12, 2026</span><strong>Lisinopril 10 mg</strong></div>
-          <div className="benefitItem"><span>May 14, 2026</span><strong>Atorvastatin 20 mg</strong></div>
-        </article>
-      </div>
+
+      <section className="ordersSection">
+        <div className="panelHeader">
+          <div><span className="eyebrow">Active orders</span><h2>In progress</h2></div>
+          <span className="ordersCount">{activeOrders.length} active</span>
+        </div>
+        <div className="memberPageGrid">
+          {activeOrders.map((order) => <OrderCard order={order} key={order.id} />)}
+        </div>
+      </section>
+
+      <section className="ordersSection">
+        <div className="panelHeader">
+          <div><span className="eyebrow">Order history</span><h2>Completed orders</h2></div>
+          <span className="ordersCount">{completedOrders.length} recent</span>
+        </div>
+        <div className="memberPageGrid">
+          {completedOrders.map((order) => <OrderCard order={order} key={order.id} />)}
+        </div>
+      </section>
     </>
   );
 }
