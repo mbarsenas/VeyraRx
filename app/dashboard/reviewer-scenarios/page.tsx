@@ -22,6 +22,23 @@ export default function ReviewerScenariosPage() {
               <span className="statusChip processing">Synthetic</span>
             </div>
             <p className="railText">{scenario.summary}</p>
+
+            <div className="scenarioEconomics">
+              <div className="scenarioEconomicsHero">
+                <span>Illustrative member responsibility</span>
+                <strong>{scenario.economics.memberResponsibility}</strong>
+                <small>{scenario.economics.medication} · {scenario.economics.quantity} · {scenario.economics.daysSupply}</small>
+              </div>
+              <div className="benefitItem"><span>Plan negotiated amount</span><strong>{scenario.economics.negotiatedAmount}</strong></div>
+              <div className="benefitItem"><span>Deductible applied</span><strong>{scenario.economics.deductibleApplied}</strong></div>
+              <div className="benefitItem"><span>Plan paid</span><strong>{scenario.economics.planPaid}</strong></div>
+              <div className="benefitItem"><span>Cost share</span><strong>{scenario.economics.copayOrCoinsurance}</strong></div>
+              <div className="benefitItem"><span>Formulary / coverage</span><strong>{scenario.economics.formularyTier} · {scenario.economics.coverageStatus}</strong></div>
+              <div className="benefitItem"><span>Network</span><strong>{scenario.economics.networkStatus}</strong></div>
+              <div className="benefitItem"><span>Utilization management</span><strong>{scenario.economics.utilizationManagement}</strong></div>
+              <p className="scenarioContext">{scenario.economics.accumulatorContext}</p>
+            </div>
+
             <div className="costContextBox">
               <strong>Review objective</strong>
               <p>{scenario.focus}</p>
@@ -31,7 +48,7 @@ export default function ReviewerScenariosPage() {
             </div>
             <div className="cardActionRow" style={{ marginTop: "16px" }}>
               {scenario.routes.map((route, index) => (
-                <Link className={index === 0 ? "button primary" : "button secondary"} href={route} key={route}>
+                <Link className={index === 0 ? "button primary" : "button secondary"} href={`${route}?scenario=${scenario.id}`} key={route}>
                   {index === 0 ? "Start scenario" : `Open ${route.split("/").filter(Boolean).at(-1)?.replaceAll("-", " ") ?? "view"}`}
                 </Link>
               ))}
@@ -44,7 +61,7 @@ export default function ReviewerScenariosPage() {
         <span className="eyebrow">Reviewer note</span>
         <h2>Scenario data model</h2>
         <p className="railText">
-          The current evaluation build uses one linked synthetic member record for interactive persistence. These scenarios are guided PBM review lenses rather than separate live identities, so the reviewer can assess benefit concepts without weakening RLS or creating artificial auth accounts.
+          The current evaluation build uses one linked synthetic member record for interactive persistence. Scenario values are an evaluation overlay only: they do not modify the authenticated member record, weaken RLS, or represent live adjudicated claims.
         </p>
       </article>
     </>
