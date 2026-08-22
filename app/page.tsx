@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 
 function ActionIcon({ type }: { type: "package" | "pill" | "card" | "pin" }) {
   const common = {
@@ -115,9 +116,8 @@ export default function Home() {
         <div className="shell splitGrid">
           <div className="deliveryVisual" aria-hidden="true">
             <div className="deliveryBadge">Free standard delivery</div>
-            <div className="deliveryPackage">
-              <span className="deliveryPackageMark">V</span>
-              <span className="deliveryPackageName">SmarteRX</span>
+            <div className="deliveryBrandPanel">
+              <BrandLogo />
               <small>Home delivery</small>
             </div>
             <div className="deliveryPill deliveryPillOne" />
