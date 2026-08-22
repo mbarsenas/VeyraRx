@@ -53,5 +53,11 @@ export function createAuthenticatedPostgresMemberRepository(sql: SqlExecutor): M
     async getBenefits() {
       return (await repository()).getBenefits();
     },
+    async getFormularyMedications() {
+      return (await repository()).getFormularyMedications();
+    },
+    async getPriorAuthorizations() {
+      return (await repository()).getPriorAuthorizations();
+    },
   };
 }
