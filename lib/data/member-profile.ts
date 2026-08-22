@@ -1,8 +1,10 @@
 import type { MemberProfile } from "@/lib/domain/profile";
 import { getCurrentMemberSession } from "@/lib/auth/session";
+import { dataApiSelect, dataApiUpdate } from "@/lib/data/data-api";
 import { neonSqlExecutor } from "@/lib/data/neon-sql";
 
 type ProfileRow = {
+  id?: string;
   email: string | null;
   phone: string | null;
   address_line1: string | null;
@@ -16,9 +18,19 @@ type ProfileRow = {
   order_updates: boolean | null;
 };
 
+function useDataApi() {
+  return process.env.VEYRA_DATA_PROVIDER === "data-api";
+}
+
 async function resolveAuthenticatedMemberId(): Promise<string> {
   const session = await getCurrentMemberSession();
   if (!session) throw new Error("An authenticated member session is required.");
+
+  if (useDataApi()) {
+    const rows = await dataApiSelect<{ id: string }>("members", "id", [], undefined, 1);
+    if (!rows[0]?.id) throw new Error("This account is not linked to a VeyraRx member record.");
+    return rows[0].id;
+  }
 
   const rows = await neonSqlExecutor<{ id: string }>(
     `SELECT id FROM members WHERE external_auth_id = $1 LIMIT 1`,
@@ -36,17 +48,21 @@ export async function getAuthenticatedMemberProfile(): Promise<MemberProfile> {
   const session = await getCurrentMemberSession();
   if (!session) throw new Error("An authenticated member session is required.");
 
-  const memberId = await resolveAuthenticatedMemberId();
-  const rows = await neonSqlExecutor<ProfileRow>(
-    `SELECT email, phone, address_line1, address_line2, city, state, postal_code,
-            communication_preference, paperless, refill_reminders, order_updates
-       FROM members
-      WHERE id = $1
-      LIMIT 1`,
-    [memberId]
-  );
+  let row: ProfileRow | undefined;
+  if (useDataApi()) {
+    row = (await dataApiSelect<ProfileRow>("members", "email,phone,address_line1,address_line2,city,state,postal_code,communication_preference,paperless,refill_reminders,order_updates", [], undefined, 1))[0];
+  } else {
+    const memberId = await resolveAuthenticatedMemberId();
+    row = (await neonSqlExecutor<ProfileRow>(
+      `SELECT email, phone, address_line1, address_line2, city, state, postal_code,
+              communication_preference, paperless, refill_reminders, order_updates
+         FROM members
+        WHERE id = $1
+        LIMIT 1`,
+      [memberId]
+    ))[0];
+  }
 
-  const row = rows[0];
   if (!row) throw new Error("Linked member profile was not found.");
 
   return {
@@ -65,8 +81,24 @@ export async function getAuthenticatedMemberProfile(): Promise<MemberProfile> {
 }
 
 export async function updateAuthenticatedMemberProfile(profile: MemberProfile): Promise<void> {
-  const memberId = await resolveAuthenticatedMemberId();
+  if (useDataApi()) {
+    await dataApiUpdate("members", {
+      phone: profile.phone.trim() || null,
+      address_line1: profile.address1.trim() || null,
+      address_line2: profile.address2.trim() || null,
+      city: profile.city.trim() || null,
+      state: profile.state.trim().toUpperCase() || null,
+      postal_code: profile.postalCode.trim() || null,
+      communication_preference: profile.communicationPreference,
+      paperless: profile.paperless,
+      refill_reminders: profile.refillReminders,
+      order_updates: profile.orderUpdates,
+      updated_at: new Date().toISOString(),
+    }, []);
+    return;
+  }
 
+  const memberId = await resolveAuthenticatedMemberId();
   await neonSqlExecutor(
     `UPDATE members
         SET phone = $2,
