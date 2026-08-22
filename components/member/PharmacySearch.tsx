@@ -33,7 +33,7 @@ export default function PharmacySearch({ pharmacyLocations, initialPreferredId }
       try {
         await setPreferredPharmacyAction(id);
         setPreferredId(id);
-        setNotice(`${pharmacy.name} is now your preferred pharmacy.`);
+        setNotice(`${pharmacy.name} is now saved as your preferred pharmacy. Network status did not change.`);
       } catch {
         setNotice("We could not update your preferred pharmacy. Please try again.");
       }
@@ -45,6 +45,7 @@ export default function PharmacySearch({ pharmacyLocations, initialPreferredId }
       <article className="panelCard" style={{ marginBottom: "20px" }}>
         <span className="eyebrow">Find a pharmacy</span>
         <h2>Search participating locations</h2>
+        <p className="railText">Your preferred pharmacy is a member preference. It is separate from the pharmacy's contracted network status and does not by itself guarantee the lowest member cost.</p>
         <div className="twoCol">
           <div>
             <label htmlFor="pharmacy-search">ZIP code, city or pharmacy</label>
@@ -68,6 +69,7 @@ export default function PharmacySearch({ pharmacyLocations, initialPreferredId }
         <div>
           <span className="eyebrow">Network results</span>
           <h2>{results.length} pharmacies found</h2>
+          <p className="railText">Compare participating status, 90-day eligibility and member preference separately.</p>
         </div>
       </div>
 
@@ -90,7 +92,7 @@ export default function PharmacySearch({ pharmacyLocations, initialPreferredId }
       )}
 
       <p className="demoDisclosure">
-        Prototype pharmacy network data. Preferred-pharmacy changes are saved to your member record.
+        Synthetic pharmacy-network data. Preferred-pharmacy changes are saved to the demo member record; actual network participation and member cost are determined by contracted network and claim adjudication.
         {isPending ? " Saving preference..." : ""}
       </p>
     </>

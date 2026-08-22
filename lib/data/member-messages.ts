@@ -1,5 +1,5 @@
 import type { MemberMessage, MessageCategory } from "@/lib/domain/message";
-import { getCurrentMemberSession } from "@/lib/auth/session";
+import { resolveAuthenticatedMemberId } from "@/lib/data/authenticated-member";
 import { neonSqlExecutor } from "@/lib/data/neon-sql";
 
 type MessageRow = {
@@ -12,22 +12,6 @@ type MessageRow = {
   is_read: boolean;
   sent_at: string;
 };
-
-async function resolveAuthenticatedMemberId(): Promise<string> {
-  const session = await getCurrentMemberSession();
-  if (!session) throw new Error("An authenticated member session is required.");
-
-  const rows = await neonSqlExecutor<{ id: string }>(
-    `SELECT id FROM members WHERE external_auth_id = $1 LIMIT 1`,
-    [session.memberId]
-  );
-
-  if (!rows[0]?.id) {
-    throw new Error("This account is not linked to a VeyraRx member record.");
-  }
-
-  return rows[0].id;
-}
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en-US", {

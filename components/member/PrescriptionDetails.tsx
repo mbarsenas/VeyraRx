@@ -1,16 +1,33 @@
 import Link from "next/link";
+import PbmScenarioContext from "@/components/member/PbmScenarioContext";
 import type { Prescription } from "../../lib/mock-data/member";
+import type { PbmDemoScenario } from "@/lib/demo/pbm-scenarios";
 
 type PrescriptionDetailsProps = {
   prescription: Prescription;
+  scenario?: PbmDemoScenario;
 };
 
-export default function PrescriptionDetails({ prescription }: PrescriptionDetailsProps) {
+function inferUtilizationManagement(prescription: Prescription) {
+  const combined = `${prescription.coverageTier} ${prescription.status}`.toLowerCase();
+  if (combined.includes("prior authorization")) return "Prior authorization applies";
+  if (combined.includes("step")) return "Step therapy applies";
+  if (combined.includes("quantity")) return "Quantity limit applies";
+  return "No utilization-management flag in this demo scenario";
+}
+
+export default function PrescriptionDetails({ prescription, scenario }: PrescriptionDetailsProps) {
+  const suffix = scenario ? `?scenario=${scenario.id}` : "";
+  const displayedMemberResponsibility = scenario?.economics.memberResponsibility ?? prescription.estimatedCost;
+  const displayedCostLabel = scenario ? "Scenario member responsibility" : "Estimated member responsibility";
+
   return (
     <main className="shell pageWrap">
-      <Link href="/dashboard/prescriptions" className="textButton">
-        &lt;- Back to prescriptions
+      <Link href={`/dashboard/prescriptions${suffix}`} className="textButton">
+        ← Back to prescriptions
       </Link>
+
+      {scenario && <PbmScenarioContext scenario={scenario} />}
 
       <span className="eyebrow" style={{ display: "block", marginTop: "24px" }}>
         Prescription details
@@ -19,8 +36,14 @@ export default function PrescriptionDetails({ prescription }: PrescriptionDetail
         {prescription.name} {prescription.strength}
       </h1>
       <p className="leadSmall">
-        {prescription.supply} - {prescription.status}
+        {prescription.supply} · {prescription.status}
       </p>
+
+      <div className="pbmTagRow">
+        <span className="pbmTag good">{prescription.coverageTier}</span>
+        <span className="pbmTag">{prescription.pharmacy}</span>
+        <span className="pbmTag">{inferUtilizationManagement(prescription)}</span>
+      </div>
 
       <div className="detailGrid">
         <article className="panelCard">
@@ -34,25 +57,37 @@ export default function PrescriptionDetails({ prescription }: PrescriptionDetail
         </article>
 
         <article className="panelCard">
-          <h2>Coverage & cost</h2>
-          <div className="benefitItem"><span>Pharmacy</span><strong>{prescription.pharmacy}</strong></div>
-          <div className="benefitItem"><span>Coverage tier</span><strong>{prescription.coverageTier}</strong></div>
-          <div className="benefitItem"><span>Estimated cost</span><strong>{prescription.estimatedCost}</strong></div>
+          <h2>Coverage & member cost</h2>
+          <div className="benefitItem"><span>Dispensing pharmacy</span><strong>{prescription.pharmacy}</strong></div>
+          <div className="benefitItem"><span>Formulary / benefit tier</span><strong>{prescription.coverageTier}</strong></div>
+          <div className="benefitItem"><span>{displayedCostLabel}</span><strong>{displayedMemberResponsibility}</strong></div>
+          <div className="benefitItem"><span>Utilization management</span><strong>{inferUtilizationManagement(prescription)}</strong></div>
+
+          <div className="costContextBox">
+            <strong>Evaluation cost context</strong>
+            <p>
+              {scenario
+                ? `The active ${scenario.memberLabel} evaluation scenario overrides the underlying prescription estimate so the reviewer sees one consistent modeled member-responsibility value throughout the scenario. No live claim is being adjudicated.`
+                : "This amount is based on synthetic benefit data. A production member cost would be determined from current eligibility, formulary rules, network status, accumulators and claim adjudication."}
+            </p>
+          </div>
+
           <div className="cardActionRow" style={{ marginTop: "18px" }}>
-            <Link className="button primary" href={prescription.primaryActionHref}>
+            <Link className="button primary" href={`${prescription.primaryActionHref}${suffix}`}>
               {prescription.primaryActionLabel}
             </Link>
-            <Link className="button secondary" href="/pricing">Price options</Link>
+            <Link className="button secondary" href={`/pricing${suffix}`}>Compare price options</Link>
           </div>
         </article>
       </div>
 
       <article className="panelCard" style={{ marginTop: "20px" }}>
         <h2>Fill history</h2>
+        <p className="railText">Synthetic paid-fill history for evaluation. Amounts shown are prior member-paid amounts in this demo scenario.</p>
         {prescription.fillHistory.map((fill) => (
           <div className="benefitItem" key={`${prescription.id}-${fill.date}`}>
             <span>{fill.date}</span>
-            <strong>{fill.quantity} - {fill.cost}</strong>
+            <strong>{fill.quantity} · {fill.cost}</strong>
           </div>
         ))}
       </article>

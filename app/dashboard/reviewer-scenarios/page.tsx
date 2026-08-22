@@ -1,0 +1,70 @@
+import Link from "next/link";
+import MemberTopbar from "@/components/member/MemberTopbar";
+import { pbmDemoScenarios } from "@/lib/demo/pbm-scenarios";
+
+export default function ReviewerScenariosPage() {
+  return (
+    <>
+      <MemberTopbar
+        eyebrow="PBM evaluation"
+        title="Reviewer scenarios"
+        description="Four synthetic benefit situations designed to surface different pharmacy-benefit concepts for expert review."
+      />
+
+      <div className="memberPageGrid reviewerScenarioGrid">
+        {pbmDemoScenarios.map((scenario) => (
+          <article className="panelCard reviewerScenarioCard" key={scenario.id}>
+            <div className="panelHeader">
+              <div>
+                <span className="eyebrow">{scenario.memberLabel}</span>
+                <h2>{scenario.title}</h2>
+              </div>
+              <span className="statusChip processing">Synthetic</span>
+            </div>
+            <p className="railText">{scenario.summary}</p>
+
+            <div className="scenarioEconomics">
+              <div className="scenarioEconomicsHero">
+                <span>Illustrative member responsibility</span>
+                <strong>{scenario.economics.memberResponsibility}</strong>
+                <small>{scenario.economics.medication}</small>
+                <small>{scenario.economics.quantity} · {scenario.economics.daysSupply}</small>
+              </div>
+              <div className="scenarioRow"><span>Plan negotiated amount</span><strong>{scenario.economics.negotiatedAmount}</strong></div>
+              <div className="scenarioRow"><span>Deductible applied</span><strong>{scenario.economics.deductibleApplied}</strong></div>
+              <div className="scenarioRow"><span>Plan paid</span><strong>{scenario.economics.planPaid}</strong></div>
+              <div className="scenarioRow"><span>Cost share</span><strong>{scenario.economics.copayOrCoinsurance}</strong></div>
+              <div className="scenarioRow scenarioRowLong"><span>Formulary / coverage</span><strong>{scenario.economics.formularyTier} · {scenario.economics.coverageStatus}</strong></div>
+              <div className="scenarioRow"><span>Network</span><strong>{scenario.economics.networkStatus}</strong></div>
+              <div className="scenarioRow scenarioRowLong"><span>Utilization management</span><strong>{scenario.economics.utilizationManagement}</strong></div>
+              <p className="scenarioContext">{scenario.economics.accumulatorContext}</p>
+            </div>
+
+            <div className="costContextBox">
+              <strong>Review objective</strong>
+              <p>{scenario.focus}</p>
+            </div>
+            <div className="pbmTagRow">
+              {scenario.highlights.map((highlight) => <span className="pbmTag" key={highlight}>{highlight}</span>)}
+            </div>
+            <div className="cardActionRow reviewerScenarioActions">
+              {scenario.routes.map((route, index) => (
+                <Link className={index === 0 ? "button primary" : "button secondary"} href={`${route}?scenario=${scenario.id}`} key={route}>
+                  {index === 0 ? "Start scenario" : `Open ${route.split("/").filter(Boolean).at(-1)?.replaceAll("-", " ") ?? "view"}`}
+                </Link>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <article className="panelCard" style={{ marginTop: "20px" }}>
+        <span className="eyebrow">Reviewer note</span>
+        <h2>Scenario data model</h2>
+        <p className="railText">
+          The current evaluation build uses one linked synthetic member record for interactive persistence. Scenario values are an evaluation overlay only: they do not modify the authenticated member record, weaken RLS, or represent live adjudicated claims.
+        </p>
+      </article>
+    </>
+  );
+}

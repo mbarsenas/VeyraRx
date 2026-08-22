@@ -1,6 +1,10 @@
 import PricingSearch from "@/components/PricingSearch";
+import { getPbmDemoScenario } from "@/lib/demo/pbm-scenarios";
 
-export default function Pricing() {
+export default async function Pricing({ searchParams }: { searchParams: Promise<{ scenario?: string }> }) {
+  const { scenario: scenarioId } = await searchParams;
+  const scenario = getPbmDemoScenario(scenarioId);
+
   return (
     <main className="shell pageWrap">
       <span className="eyebrow">Drug pricing</span>
@@ -8,7 +12,7 @@ export default function Pricing() {
       <p className="leadSmall">
         Search demo medication prices across participating pharmacies and compare estimated member, negotiated and cash costs.
       </p>
-      <PricingSearch />
+      <PricingSearch scenario={scenarioId ? scenario : undefined} />
     </main>
   );
 }
