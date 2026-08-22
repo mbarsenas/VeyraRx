@@ -24,13 +24,13 @@ const paidClaim = {
   reject_message: null,
 };
 
-test("Data API claim history is filtered to the authenticated member", async () => {
-  const calls: Array<{ filters?: string[]; order?: string }> = [];
+test("Data API claim history uses a PostgREST-safe select and authenticated member filter", async () => {
+  const calls: Array<{ select: string; filters?: string[]; order?: string }> = [];
   const repository = createMemberClaimsRepository({
     resolveMemberId: async () => "member-a",
     isDataApi: () => true,
-    selectFromDataApi: async <T>(_table: string, _select: string, filters?: string[], order?: string) => {
-      calls.push({ filters, order });
+    selectFromDataApi: async <T>(_table: string, select: string, filters?: string[], order?: string) => {
+      calls.push({ select, filters, order });
       return [paidClaim] as T[];
     },
     executeSql: async () => { throw new Error("Direct SQL must not run in Data API mode"); },
@@ -39,7 +39,8 @@ test("Data API claim history is filtered to the authenticated member", async () 
   const claims = await repository.list();
 
   assert.deepEqual(calls[0]?.filters, ["member_id=eq.member-a"]);
-  assert.equal(calls[0]?.order, "service_date.desc,adjudicated_at.desc.nullslast");
+  assert.equal(calls[0]?.order, "service_date.desc");
+  assert.doesNotMatch(calls[0]?.select ?? "", /\s/);
   assert.equal(claims[0]?.id, "claim-member-a");
 });
 

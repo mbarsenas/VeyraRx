@@ -61,10 +61,12 @@ const claimSelect = `SELECT id, claim_reference, medication_name, strength, quan
                             coinsurance_cents, reject_code, reject_message
                        FROM member_claims`;
 
-const claimColumns = `id,claim_reference,medication_name,strength,quantity,days_supply,
-pharmacy_name,service_date,status,transaction_type,submitted_amount_cents,allowed_amount_cents,
-plan_paid_cents,member_responsibility_cents,deductible_cents,copay_cents,coinsurance_cents,
-reject_code,reject_message`;
+const claimColumns = [
+  "id", "claim_reference", "medication_name", "strength", "quantity", "days_supply",
+  "pharmacy_name", "service_date", "status", "transaction_type", "submitted_amount_cents",
+  "allowed_amount_cents", "plan_paid_cents", "member_responsibility_cents", "deductible_cents",
+  "copay_cents", "coinsurance_cents", "reject_code", "reject_message",
+].join(",");
 
 type ClaimDataApiSelect = <T>(table: string, select: string, filters?: string[], order?: string, limit?: number) => Promise<T[]>;
 type ClaimSqlExecutor = <T = Record<string, unknown>>(statement: string, params?: unknown[]) => Promise<T[]>;
@@ -84,7 +86,7 @@ export function createMemberClaimsRepository(dependencies: MemberClaimsDependenc
   async function list(): Promise<MemberClaim[]> {
     const memberId = await dependencies.resolveMemberId();
     const rows = dependencies.isDataApi()
-      ? await dependencies.selectFromDataApi<ClaimRow>("member_claims", claimColumns, [`member_id=${eq(memberId)}`], "service_date.desc,adjudicated_at.desc.nullslast")
+      ? await dependencies.selectFromDataApi<ClaimRow>("member_claims", claimColumns, [`member_id=${eq(memberId)}`], "service_date.desc")
       : await dependencies.executeSql<ClaimRow>(`${claimSelect}\n      WHERE member_id = $1\n      ORDER BY service_date DESC, adjudicated_at DESC NULLS LAST`, [memberId]);
     return rows.map(mapClaim);
   }
