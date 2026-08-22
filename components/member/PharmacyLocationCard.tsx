@@ -7,7 +7,14 @@ type Props = {
 };
 
 export default function PharmacyLocationCard({ pharmacy, isPreferred, onSelectPreferred }: Props) {
-  const statusClass = pharmacy.networkStatus === "Preferred" ? "statusChip" : pharmacy.networkStatus === "In network" ? "statusChip processing" : "statusChip attention";
+  const displayStatus = isPreferred ? "Preferred" : pharmacy.networkStatus;
+  const statusClass = isPreferred
+    ? "statusChip"
+    : pharmacy.networkStatus === "In network"
+      ? "statusChip processing"
+      : pharmacy.networkStatus === "Out of network"
+        ? "statusChip attention"
+        : "statusChip processing";
 
   return (
     <article className="panelCard">
@@ -16,7 +23,7 @@ export default function PharmacyLocationCard({ pharmacy, isPreferred, onSelectPr
           <span className="eyebrow">{isPreferred ? "Preferred pharmacy" : "Pharmacy"}</span>
           <h2>{pharmacy.name}</h2>
         </div>
-        <span className={statusClass}>{pharmacy.networkStatus}</span>
+        <span className={statusClass}>{displayStatus}</span>
       </div>
 
       <p className="railText">{pharmacy.address}<br />{pharmacy.cityStateZip}<br />{pharmacy.distance} away</p>
