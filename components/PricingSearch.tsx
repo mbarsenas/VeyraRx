@@ -88,7 +88,7 @@ export default function PricingSearch({ scenario }: { scenario?: PbmDemoScenario
   return (
     <>
       {scenario && (
-        <article className="panelCard pbmScenarioContext" style={{ marginTop: "28px", borderLeft: "4px solid #8dbb35" }}>
+        <article className="panelCard pbmScenarioContext" style={{ marginTop: "28px", borderLeft: "4px solid #09b8f2" }}>
           <div className="panelHeader">
             <div>
               <span className="eyebrow">{scenario.memberLabel} · PBM evaluation</span>
