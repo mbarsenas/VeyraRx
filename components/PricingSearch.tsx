@@ -12,6 +12,19 @@ type SearchState = {
 
 const initialSearch: SearchState = { medication: "atorvastatin", strength: "20 mg", quantity: "30" };
 
+function utilizationManagementLabel(quote: MedicationPriceQuote) {
+  const status = (quote.coverageStatus ?? "").toLowerCase();
+  if (status.includes("prior authorization")) return "Prior authorization";
+  if (status.includes("step")) return "Step therapy";
+  if (status.includes("quantity")) return "Quantity limit";
+  return "No UM flag in demo quote";
+}
+
+function coverageLabel(quote: MedicationPriceQuote) {
+  if (!quote.coverageStatus) return "Coverage not available";
+  return quote.coverageStatus;
+}
+
 export default function PricingSearch() {
   const [search, setSearch] = useState(initialSearch);
   const [results, setResults] = useState<MedicationPriceQuote[]>([]);
@@ -75,7 +88,7 @@ export default function PricingSearch() {
         <button className="button primary" onClick={submitSearch} disabled={isPending || !search.medication.trim()}>
           {isPending ? "Searching..." : "Search prices"}
         </button>
-        <small className="note">Demo pricing only. These values are not live pharmacy or payer quotes.</small>
+        <small className="note">Synthetic evaluation pricing only. Estimates are not live claim adjudication, guarantees of member liability, or pharmacy quotes.</small>
         {message && <div className="workflowNotice">{message}</div>}
       </div>
 
@@ -84,6 +97,7 @@ export default function PricingSearch() {
           <div className="sectionIntro">
             <span className="eyebrow">Pricing results</span>
             <h2>{results.length ? `${results.length} price options found` : "No matching price options"}</h2>
+            <p className="railText">Compare the member estimate with the plan-negotiated amount and cash price. In production, final member responsibility would depend on real-time eligibility, accumulator state, benefit rules and claim adjudication.</p>
           </div>
 
           {results.length > 0 ? (
@@ -94,7 +108,7 @@ export default function PricingSearch() {
                     <div>
                       <span className="eyebrow">{quote.formularyTier ?? "Medication"}</span>
                       <h2>{quote.medicationName} {quote.strength}</h2>
-                      <p className="railText">{quote.quantity} units{quote.daysSupply ? ` · ${quote.daysSupply}-day supply` : ""}</p>
+                      <p className="railText">{quote.quantity} units{quote.daysSupply ? ` · ${quote.daysSupply}-day supply` : ""} · {quote.fulfillmentType}</p>
                     </div>
                     <span className={quote.networkStatus === "Out of network" ? "statusChip attention" : "statusChip processing"}>
                       {quote.networkStatus}
@@ -106,16 +120,27 @@ export default function PricingSearch() {
                     <span>{quote.pharmacyAddress}, {quote.pharmacyCityStateZip}</span>
                   </div>
 
+                  <div className="pbmTagRow">
+                    <span className="pbmTag good">{coverageLabel(quote)}</span>
+                    <span className={utilizationManagementLabel(quote).startsWith("No ") ? "pbmTag" : "pbmTag warning"}>{utilizationManagementLabel(quote)}</span>
+                    <span className="pbmTag">{quote.formularyTier ?? "Tier not available"}</span>
+                  </div>
+
                   <div className="pricingCostHero">
-                    <span>Your estimated cost</span>
+                    <span>Estimated member responsibility</span>
                     <strong>{quote.memberEstimatedCost ?? "Not available"}</strong>
                   </div>
 
-                  <div className="benefitItem"><span>Plan negotiated cost</span><strong>{quote.negotiatedPrice ?? "Not available"}</strong></div>
+                  <div className="benefitItem"><span>Plan-negotiated amount</span><strong>{quote.negotiatedPrice ?? "Not available"}</strong></div>
                   <div className="benefitItem"><span>Cash price</span><strong>{quote.cashPrice ?? "Not available"}</strong></div>
-                  <div className="benefitItem"><span>Coverage</span><strong>{quote.coverageStatus ?? "Not available"}</strong></div>
-                  <div className="benefitItem"><span>Copay</span><strong>{quote.copay ?? "Not applicable"}</strong></div>
+                  <div className="benefitItem"><span>Fixed copay</span><strong>{quote.copay ?? "Not applicable"}</strong></div>
+                  <div className="benefitItem"><span>Coinsurance</span><strong>{quote.coinsurancePercent != null ? `${quote.coinsurancePercent}%` : "Not applicable"}</strong></div>
                   <div className="benefitItem"><span>Deductible applies</span><strong>{quote.deductibleApplies ? "Yes" : "No"}</strong></div>
+
+                  <div className="costContextBox">
+                    <strong>How to read this estimate</strong>
+                    <p>The plan-negotiated amount is the contracted reference amount for this demo scenario. The estimated member responsibility reflects the synthetic benefit setup shown here; it is not a live paid-claim result.</p>
+                  </div>
 
                   <p className="pricingAsOf">
                     Pricing as of {new Date(quote.quotedAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })} · {quote.pricingSource}
