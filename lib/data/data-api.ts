@@ -45,7 +45,12 @@ export async function dataApiSelect<T>(
   if (limit) params.set("limit", String(limit));
 
   const response = await fetch(`${DATA_API_URL}/${table}?${params.toString()}`, {
-    headers: { Authorization: `Bearer ${jwt}` },
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      Accept: "application/json",
+      "Accept-Profile": "public",
+      "Content-Profile": "public",
+    },
     cache: "no-store",
   });
   if (!response.ok) throw new Error(`Data API SELECT failed for ${table}: ${await response.text()}`);
@@ -70,6 +75,9 @@ export async function dataApiUpdate<T extends Record<string, unknown>>(
     headers: {
       Authorization: `Bearer ${jwt}`,
       "Content-Type": "application/json",
+      Accept: "application/json",
+      "Accept-Profile": "public",
+      "Content-Profile": "public",
       Prefer: "return=minimal",
     },
     body: JSON.stringify(values),
