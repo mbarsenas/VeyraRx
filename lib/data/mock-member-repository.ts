@@ -1,5 +1,5 @@
 import { member, prescriptions, recentActivity } from "@/lib/mock-data/member";
-import { benefitSummary, coverageTiers } from "@/lib/mock-data/benefits";
+import { benefitSummary, coverageTiers, formularyMedications, priorAuthorizations } from "@/lib/mock-data/benefits";
 import type { MemberRepository } from "@/lib/data/member-repository";
 
 export const mockMemberRepository: MemberRepository = {
@@ -24,5 +24,11 @@ export const mockMemberRepository: MemberRepository = {
       planYear: benefitSummary.planYear,
       coverageTiers,
     };
+  },
+  async getFormularyMedications() {
+    return formularyMedications;
+  },
+  async getPriorAuthorizations() {
+    return priorAuthorizations;
   },
 };
