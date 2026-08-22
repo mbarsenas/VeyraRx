@@ -1,4 +1,4 @@
-import type { PharmacyLocation } from "@/lib/mock-data/pharmacies";
+import type { PharmacyLocation } from "@/lib/domain/pharmacy";
 
 type Props = {
   pharmacy: PharmacyLocation;
