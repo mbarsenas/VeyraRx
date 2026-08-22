@@ -97,3 +97,7 @@ body{color:var(--smart-text)}
 .progressFill{background:linear-gradient(90deg,var(--smart-blue),var(--smart-cyan))}
 .brandMark{background:var(--smart-blue)}.brandRx{background:var(--smart-blue);color:#c9efff}
 .footerGrid a:hover{color:var(--smart-cyan)}
+
+/* Keep the navy SmarteRX wordmark legible inside the navy member rail. */
+.memberBrand{width:100%;justify-content:center;background:#fff;border:1px solid rgba(9,184,242,.3);border-radius:14px;padding:12px 14px;margin-bottom:28px;box-shadow:0 10px 24px rgba(1,20,49,.22)}
+.memberBrand .brandLogo{width:190px;max-width:100%}
