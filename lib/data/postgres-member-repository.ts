@@ -1,5 +1,6 @@
 import type { ActivityItem, MemberSummary, Prescription } from "@/lib/domain/member";
 import type { FormularyMedication, MemberBenefits, PriorAuthorization } from "@/lib/domain/benefits";
+import type { PharmacyLocation, PharmacyNetworkStatus } from "@/lib/domain/pharmacy";
 import type { MemberRepository } from "@/lib/data/member-repository";
 
 export type SqlExecutor = <T = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<T[]>;
@@ -70,6 +71,22 @@ type PriorAuthorizationRow = {
   status: string;
   requirement: string;
   last_updated: string;
+};
+type PharmacyRow = {
+  id: string;
+  name: string;
+  slug: string | null;
+  address_line1: string | null;
+  city: string;
+  state: string;
+  postal_code: string | null;
+  distance_label: string | null;
+  phone: string | null;
+  hours_label: string | null;
+  network_status: PharmacyNetworkStatus;
+  pickup: boolean;
+  ninety_day_eligible: boolean;
+  drive_thru: boolean;
 };
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
@@ -263,6 +280,57 @@ export function createPostgresMemberRepository(sql: SqlExecutor, memberId: strin
         requirement: row.requirement,
         lastUpdated: formatDate(row.last_updated),
       }));
+    },
+
+    async getPharmacies(): Promise<PharmacyLocation[]> {
+      const rows = await sql<PharmacyRow>(
+        `SELECT id, name, slug, address_line1, city, state, postal_code, distance_label,
+                phone, hours_label, network_status, pickup, ninety_day_eligible, drive_thru
+           FROM pharmacies
+          ORDER BY CASE network_status WHEN 'Preferred' THEN 0 WHEN 'In network' THEN 1 ELSE 2 END,
+                   name`,
+        []
+      );
+      return rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug ?? row.id,
+        address: row.address_line1 ?? "Address unavailable",
+        cityStateZip: `${row.city}, ${row.state}${row.postal_code ? ` ${row.postal_code}` : ""}`,
+        distance: row.distance_label ?? "Distance unavailable",
+        phone: row.phone ?? "Not available",
+        hours: row.hours_label ?? "Hours unavailable",
+        networkStatus: row.network_status,
+        pickup: row.pickup,
+        ninetyDayEligible: row.ninety_day_eligible,
+        driveThru: row.drive_thru,
+      }));
+    },
+
+    async getPreferredPharmacyId(): Promise<string | null> {
+      const rows = await sql<{ preferred_pharmacy_id: string | null }>(
+        `SELECT preferred_pharmacy_id FROM members WHERE id = $1 LIMIT 1`,
+        [memberId]
+      );
+      return rows[0]?.preferred_pharmacy_id ?? null;
+    },
+
+    async setPreferredPharmacy(id: string): Promise<void> {
+      const pharmacy = await sql<{ id: string }>(
+        `SELECT id FROM pharmacies WHERE id = $1 AND network_status <> 'Out of network' LIMIT 1`,
+        [id]
+      );
+      if (!pharmacy[0]) throw new Error("The selected pharmacy is not eligible to be preferred.");
+
+      const updated = await sql<{ id: string }>(
+        `UPDATE members
+            SET preferred_pharmacy_id = $1,
+                updated_at = CURRENT_TIMESTAMP
+          WHERE id = $2
+        RETURNING id`,
+        [id, memberId]
+      );
+      if (!updated[0]) throw new Error(`Member '${memberId}' was not found.`);
     },
   };
 }

@@ -1,7 +1,14 @@
 import MemberTopbar from "@/components/member/MemberTopbar";
 import PharmacySearch from "@/components/member/PharmacySearch";
+import { getMemberRepository } from "@/lib/data";
 
-export default function MemberPharmacyPage() {
+export default async function MemberPharmacyPage() {
+  const repository = getMemberRepository();
+  const [pharmacyLocations, preferredId] = await Promise.all([
+    repository.getPharmacies(),
+    repository.getPreferredPharmacyId(),
+  ]);
+
   return (
     <>
       <MemberTopbar
@@ -9,7 +16,7 @@ export default function MemberPharmacyPage() {
         title="Your pharmacy network"
         description="Review your preferred pharmacy, search participating locations and compare network details."
       />
-      <PharmacySearch />
+      <PharmacySearch pharmacyLocations={pharmacyLocations} initialPreferredId={preferredId} />
     </>
   );
 }
