@@ -11,9 +11,9 @@ export default function ReviewerScenariosPage() {
         description="Four synthetic benefit situations designed to surface different pharmacy-benefit concepts for expert review."
       />
 
-      <div className="memberPageGrid">
+      <div className="memberPageGrid reviewerScenarioGrid">
         {pbmDemoScenarios.map((scenario) => (
-          <article className="panelCard" key={scenario.id}>
+          <article className="panelCard reviewerScenarioCard" key={scenario.id}>
             <div className="panelHeader">
               <div>
                 <span className="eyebrow">{scenario.memberLabel}</span>
@@ -27,15 +27,16 @@ export default function ReviewerScenariosPage() {
               <div className="scenarioEconomicsHero">
                 <span>Illustrative member responsibility</span>
                 <strong>{scenario.economics.memberResponsibility}</strong>
-                <small>{scenario.economics.medication} · {scenario.economics.quantity} · {scenario.economics.daysSupply}</small>
+                <small>{scenario.economics.medication}</small>
+                <small>{scenario.economics.quantity} · {scenario.economics.daysSupply}</small>
               </div>
-              <div className="benefitItem"><span>Plan negotiated amount</span><strong>{scenario.economics.negotiatedAmount}</strong></div>
-              <div className="benefitItem"><span>Deductible applied</span><strong>{scenario.economics.deductibleApplied}</strong></div>
-              <div className="benefitItem"><span>Plan paid</span><strong>{scenario.economics.planPaid}</strong></div>
-              <div className="benefitItem"><span>Cost share</span><strong>{scenario.economics.copayOrCoinsurance}</strong></div>
-              <div className="benefitItem"><span>Formulary / coverage</span><strong>{scenario.economics.formularyTier} · {scenario.economics.coverageStatus}</strong></div>
-              <div className="benefitItem"><span>Network</span><strong>{scenario.economics.networkStatus}</strong></div>
-              <div className="benefitItem"><span>Utilization management</span><strong>{scenario.economics.utilizationManagement}</strong></div>
+              <div className="scenarioRow"><span>Plan negotiated amount</span><strong>{scenario.economics.negotiatedAmount}</strong></div>
+              <div className="scenarioRow"><span>Deductible applied</span><strong>{scenario.economics.deductibleApplied}</strong></div>
+              <div className="scenarioRow"><span>Plan paid</span><strong>{scenario.economics.planPaid}</strong></div>
+              <div className="scenarioRow"><span>Cost share</span><strong>{scenario.economics.copayOrCoinsurance}</strong></div>
+              <div className="scenarioRow scenarioRowLong"><span>Formulary / coverage</span><strong>{scenario.economics.formularyTier} · {scenario.economics.coverageStatus}</strong></div>
+              <div className="scenarioRow"><span>Network</span><strong>{scenario.economics.networkStatus}</strong></div>
+              <div className="scenarioRow scenarioRowLong"><span>Utilization management</span><strong>{scenario.economics.utilizationManagement}</strong></div>
               <p className="scenarioContext">{scenario.economics.accumulatorContext}</p>
             </div>
 
@@ -46,7 +47,7 @@ export default function ReviewerScenariosPage() {
             <div className="pbmTagRow">
               {scenario.highlights.map((highlight) => <span className="pbmTag" key={highlight}>{highlight}</span>)}
             </div>
-            <div className="cardActionRow" style={{ marginTop: "16px" }}>
+            <div className="cardActionRow reviewerScenarioActions">
               {scenario.routes.map((route, index) => (
                 <Link className={index === 0 ? "button primary" : "button secondary"} href={`${route}?scenario=${scenario.id}`} key={route}>
                   {index === 0 ? "Start scenario" : `Open ${route.split("/").filter(Boolean).at(-1)?.replaceAll("-", " ") ?? "view"}`}
