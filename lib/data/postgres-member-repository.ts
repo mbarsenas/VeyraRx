@@ -1,5 +1,5 @@
 import type { ActivityItem, MemberSummary, Prescription } from "@/lib/domain/member";
-import type { MemberBenefits } from "@/lib/domain/benefits";
+import type { FormularyMedication, MemberBenefits, PriorAuthorization } from "@/lib/domain/benefits";
 import type { MemberRepository } from "@/lib/data/member-repository";
 
 export type SqlExecutor = <T = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<T[]>;
@@ -58,9 +58,24 @@ type CoverageTierRow = {
   retail_90_label: string;
   home_90_label: string;
 };
+type FormularyRow = {
+  name: string;
+  strength: string;
+  tier: string;
+  coverage_status: FormularyMedication["status"];
+  estimated_cost_cents: number;
+};
+type PriorAuthorizationRow = {
+  medication: string;
+  status: string;
+  requirement: string;
+  last_updated: string;
+};
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const dateLabel = (value: string | null) => value ?? "Not available";
+const formatDate = (value: string) =>
+  new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
 
 export function createPostgresMemberRepository(sql: SqlExecutor, memberId: string): MemberRepository {
   async function getPrescriptionRows(): Promise<PrescriptionRow[]> {
@@ -107,6 +122,13 @@ export function createPostgresMemberRepository(sql: SqlExecutor, memberId: strin
         .filter((fill) => fill.prescription_id === row.id)
         .map((fill) => ({ date: fill.fill_date, quantity: fill.quantity, cost: money(fill.cost_cents) })),
     }));
+  }
+
+  async function getPlanId(): Promise<string> {
+    const rows = await sql<{ plan_id: string }>(`SELECT plan_id FROM members WHERE id = $1 LIMIT 1`, [memberId]);
+    const planId = rows[0]?.plan_id;
+    if (!planId) throw new Error(`Plan was not found for member '${memberId}'.`);
+    return planId;
   }
 
   return {
@@ -208,6 +230,39 @@ export function createPostgresMemberRepository(sql: SqlExecutor, memberId: strin
           home90: tier.home_90_label,
         })),
       };
+    },
+
+    async getFormularyMedications(): Promise<FormularyMedication[]> {
+      const rows = await sql<FormularyRow>(
+        `SELECT name, strength, tier, coverage_status, estimated_cost_cents
+           FROM plan_formulary_medications
+          WHERE plan_id = $1
+          ORDER BY sort_order, name`,
+        [await getPlanId()]
+      );
+      return rows.map((row) => ({
+        name: row.name,
+        strength: row.strength,
+        tier: row.tier,
+        status: row.coverage_status,
+        estimatedCost: money(row.estimated_cost_cents),
+      }));
+    },
+
+    async getPriorAuthorizations(): Promise<PriorAuthorization[]> {
+      const rows = await sql<PriorAuthorizationRow>(
+        `SELECT medication, status, requirement, last_updated::text
+           FROM member_prior_authorizations
+          WHERE member_id = $1
+          ORDER BY last_updated DESC, medication`,
+        [memberId]
+      );
+      return rows.map((row) => ({
+        medication: row.medication,
+        status: row.status,
+        requirement: row.requirement,
+        lastUpdated: formatDate(row.last_updated),
+      }));
     },
   };
 }
