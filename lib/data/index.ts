@@ -1,9 +1,10 @@
 import type { MemberRepository } from "@/lib/data/member-repository";
 import { mockMemberRepository } from "@/lib/data/mock-member-repository";
 import { createAuthenticatedPostgresMemberRepository } from "@/lib/data/authenticated-postgres-member-repository";
+import { createRlsMemberRepository } from "@/lib/data/rls-member-repository";
 import { neonSqlExecutor } from "@/lib/data/neon-sql";
 
-export type DataProvider = "mock" | "postgres";
+export type DataProvider = "mock" | "postgres" | "data-api";
 
 function getConfiguredProvider(): DataProvider {
   const configured = process.env.VEYRA_DATA_PROVIDER;
@@ -16,12 +17,12 @@ function getConfiguredProvider(): DataProvider {
     return "mock";
   }
 
-  if (configured !== "mock" && configured !== "postgres") {
+  if (configured !== "mock" && configured !== "postgres" && configured !== "data-api") {
     throw new Error(`Unsupported data provider '${configured}'.`);
   }
 
   if (isProduction && configured === "mock") {
-    throw new Error("The mock data provider is disabled in production. Configure VEYRA_DATA_PROVIDER=postgres.");
+    throw new Error("The mock data provider is disabled in production. Configure VEYRA_DATA_PROVIDER=data-api.");
   }
 
   return configured;
@@ -32,6 +33,10 @@ export function getMemberRepository(): MemberRepository {
 
   if (provider === "mock") {
     return mockMemberRepository;
+  }
+
+  if (provider === "data-api") {
+    return createRlsMemberRepository();
   }
 
   return createAuthenticatedPostgresMemberRepository(neonSqlExecutor);
