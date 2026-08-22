@@ -1,8 +1,11 @@
 import Link from "next/link";
+import PbmScenarioContext from "@/components/member/PbmScenarioContext";
 import type { Prescription } from "../../lib/mock-data/member";
+import type { PbmDemoScenario } from "@/lib/demo/pbm-scenarios";
 
 type PrescriptionDetailsProps = {
   prescription: Prescription;
+  scenario?: PbmDemoScenario;
 };
 
 function inferUtilizationManagement(prescription: Prescription) {
@@ -13,12 +16,16 @@ function inferUtilizationManagement(prescription: Prescription) {
   return "No utilization-management flag in this demo scenario";
 }
 
-export default function PrescriptionDetails({ prescription }: PrescriptionDetailsProps) {
+export default function PrescriptionDetails({ prescription, scenario }: PrescriptionDetailsProps) {
+  const suffix = scenario ? `?scenario=${scenario.id}` : "";
+
   return (
     <main className="shell pageWrap">
-      <Link href="/dashboard/prescriptions" className="textButton">
-        &lt;- Back to prescriptions
+      <Link href={`/dashboard/prescriptions${suffix}`} className="textButton">
+        ← Back to prescriptions
       </Link>
+
+      {scenario && <PbmScenarioContext scenario={scenario} />}
 
       <span className="eyebrow" style={{ display: "block", marginTop: "24px" }}>
         Prescription details
@@ -27,7 +34,7 @@ export default function PrescriptionDetails({ prescription }: PrescriptionDetail
         {prescription.name} {prescription.strength}
       </h1>
       <p className="leadSmall">
-        {prescription.supply} - {prescription.status}
+        {prescription.supply} · {prescription.status}
       </p>
 
       <div className="pbmTagRow">
@@ -60,10 +67,10 @@ export default function PrescriptionDetails({ prescription }: PrescriptionDetail
           </div>
 
           <div className="cardActionRow" style={{ marginTop: "18px" }}>
-            <Link className="button primary" href={prescription.primaryActionHref}>
+            <Link className="button primary" href={`${prescription.primaryActionHref}${suffix}`}>
               {prescription.primaryActionLabel}
             </Link>
-            <Link className="button secondary" href="/pricing">Compare price options</Link>
+            <Link className="button secondary" href={`/pricing${suffix}`}>Compare price options</Link>
           </div>
         </article>
       </div>
@@ -74,7 +81,7 @@ export default function PrescriptionDetails({ prescription }: PrescriptionDetail
         {prescription.fillHistory.map((fill) => (
           <div className="benefitItem" key={`${prescription.id}-${fill.date}`}>
             <span>{fill.date}</span>
-            <strong>{fill.quantity} - {fill.cost}</strong>
+            <strong>{fill.quantity} · {fill.cost}</strong>
           </div>
         ))}
       </article>
