@@ -28,25 +28,6 @@ export function createAuthenticatedPostgresMemberRepository(sql: SqlExecutor): M
       return resolvedMemberId;
     }
 
-    const bootstrapMemberId = process.env.VEYRA_MEMBER_ID;
-    if (bootstrapMemberId) {
-      const claimed = await sql<MemberLookupRow>(
-        `UPDATE members
-            SET external_auth_id = $1,
-                email = COALESCE(email, $2),
-                updated_at = CURRENT_TIMESTAMP
-          WHERE id = $3
-            AND external_auth_id IS NULL
-        RETURNING id`,
-        [session.memberId, session.email, bootstrapMemberId]
-      );
-
-      if (claimed[0]?.id) {
-        resolvedMemberId = claimed[0].id;
-        return resolvedMemberId;
-      }
-    }
-
     throw new Error(
       "This authenticated account is not linked to a VeyraRx member record. Complete member enrollment before accessing protected health-plan data."
     );
@@ -68,6 +49,15 @@ export function createAuthenticatedPostgresMemberRepository(sql: SqlExecutor): M
     },
     async getRecentActivity() {
       return (await repository()).getRecentActivity();
+    },
+    async getBenefits() {
+      return (await repository()).getBenefits();
+    },
+    async getFormularyMedications() {
+      return (await repository()).getFormularyMedications();
+    },
+    async getPriorAuthorizations() {
+      return (await repository()).getPriorAuthorizations();
     },
   };
 }

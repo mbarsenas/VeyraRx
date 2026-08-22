@@ -2,12 +2,21 @@ import Link from "next/link";
 import MemberTopbar from "@/components/member/MemberTopbar";
 import SummaryCard from "@/components/member/SummaryCard";
 import CoverageTierCard from "@/components/member/CoverageTierCard";
-import { member } from "@/lib/mock-data/member";
-import { benefitSummary, coverageTiers } from "@/lib/mock-data/benefits";
+import { getMemberRepository } from "@/lib/data";
 
-export default function MemberBenefitsPage() {
-  const deductiblePercent = Math.round((benefitSummary.deductibleUsed / benefitSummary.deductibleTotal) * 100);
-  const outOfPocketPercent = Math.round((benefitSummary.outOfPocketUsed / benefitSummary.outOfPocketMax) * 100);
+export default async function MemberBenefitsPage() {
+  const repository = getMemberRepository();
+  const [member, benefits] = await Promise.all([
+    repository.getMemberSummary(),
+    repository.getBenefits(),
+  ]);
+
+  const deductiblePercent = benefits.deductibleTotal > 0
+    ? Math.round((benefits.deductibleUsed / benefits.deductibleTotal) * 100)
+    : 0;
+  const outOfPocketPercent = benefits.outOfPocketMax > 0
+    ? Math.round((benefits.outOfPocketUsed / benefits.outOfPocketMax) * 100)
+    : 0;
 
   return (
     <>
@@ -20,17 +29,17 @@ export default function MemberBenefitsPage() {
       <section className="summaryGrid">
         <SummaryCard
           label="Deductible used"
-          value={`$${benefitSummary.deductibleUsed}`}
-          detail={`${deductiblePercent}% of $${benefitSummary.deductibleTotal.toLocaleString()}`}
+          value={`$${benefits.deductibleUsed.toLocaleString()}`}
+          detail={`${deductiblePercent}% of $${benefits.deductibleTotal.toLocaleString()}`}
           progressPercent={deductiblePercent}
         />
         <SummaryCard
           label="Out-of-pocket"
-          value={`$${benefitSummary.outOfPocketUsed}`}
-          detail={`${outOfPocketPercent}% of $${benefitSummary.outOfPocketMax.toLocaleString()}`}
+          value={`$${benefits.outOfPocketUsed.toLocaleString()}`}
+          detail={`${outOfPocketPercent}% of $${benefits.outOfPocketMax.toLocaleString()}`}
           progressPercent={outOfPocketPercent}
         />
-        <SummaryCard label="Plan" value={member.plan.name} detail={benefitSummary.planYear} />
+        <SummaryCard label="Plan" value={member.plan.name} detail={benefits.planYear} />
         <SummaryCard label="Potential savings" value={`$${member.potentialSavings}`} detail="Available this month" />
       </section>
 
@@ -41,7 +50,7 @@ export default function MemberBenefitsPage() {
           <div className="benefitItem"><span>Rx BIN</span><strong>{member.plan.rxBin}</strong></div>
           <div className="benefitItem"><span>Rx Group</span><strong>{member.plan.rxGroup}</strong></div>
           <div className="benefitItem"><span>Effective date</span><strong>{member.plan.effectiveDate}</strong></div>
-          <div className="benefitItem"><span>Plan year</span><strong>{benefitSummary.planYear}</strong></div>
+          <div className="benefitItem"><span>Plan year</span><strong>{benefits.planYear}</strong></div>
         </article>
 
         <article className="panelCard">
@@ -63,11 +72,11 @@ export default function MemberBenefitsPage() {
           </div>
         </div>
         <div className="memberPageGrid">
-          {coverageTiers.map((tier) => <CoverageTierCard key={tier.name} tier={tier} />)}
+          {benefits.coverageTiers.map((tier) => <CoverageTierCard key={tier.name} tier={tier} />)}
         </div>
       </section>
 
-      <p className="demoDisclosure">Prototype benefit data only. Actual member costs and coverage are determined by the member plan and pharmacy claim.</p>
+      <p className="demoDisclosure">Demo benefit data only. Actual member costs and coverage are determined by the member plan and pharmacy claim.</p>
     </>
   );
 }
