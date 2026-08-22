@@ -91,7 +91,7 @@ export async function getAuthenticatedMemberProfile(): Promise<MemberProfile> {
     communicationPreference: row.communication_preference ?? "Email",
     paperless: row.paperless ?? true,
     refillReminders: row.refill_reminders ?? true,
-    orderUpdates: row.orderUpdates ?? true,
+    orderUpdates: row.order_updates ?? true,
   };
 }
 
