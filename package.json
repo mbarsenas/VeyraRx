@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/**/*.test.ts",
     "check:prod-data": "node -e \"const p=process.env.VEYRA_DATA_PROVIDER;if(process.env.NODE_ENV==='production'&&p!=='data-api'){console.error('Production requires VEYRA_DATA_PROVIDER=data-api');process.exit(1)}\""
   },
   "dependencies": {
@@ -20,6 +22,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

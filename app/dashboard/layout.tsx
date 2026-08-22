@@ -2,6 +2,8 @@ import MemberSidebar from "@/components/member/MemberSidebar";
 import "./member-shell.css";
 import "./claims/claims.css";
 
+export const dynamic = "force-dynamic";
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="memberApp">
