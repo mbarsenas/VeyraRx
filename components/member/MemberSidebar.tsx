@@ -6,6 +6,7 @@ import { member } from "@/lib/mock-data/member";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", exact: true },
+  { href: "/dashboard/reviewer-scenarios", label: "Reviewer scenarios" },
   { href: "/dashboard/prescriptions", label: "Prescriptions" },
   { href: "/dashboard/orders", label: "Orders" },
   { href: "/dashboard/benefits", label: "Benefits & coverage" },
@@ -42,9 +43,9 @@ export default function MemberSidebar() {
       </nav>
 
       <div className="memberHelp">
-        <strong>Need help?</strong>
-        <p>Member support is available for prescription and benefit questions.</p>
-        <Link href="/contact">Contact support</Link>
+        <strong>Evaluation build</strong>
+        <p>Use Reviewer scenarios to inspect different synthetic PBM benefit situations.</p>
+        <Link href="/dashboard/reviewer-scenarios">Open scenarios</Link>
       </div>
     </aside>
   );
