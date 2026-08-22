@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "check:prod-data": "node -e \"const p=process.env.VEYRA_DATA_PROVIDER;if(process.env.NODE_ENV==='production'&&p!=='postgres'){console.error('Production requires VEYRA_DATA_PROVIDER=postgres');process.exit(1)}\""
   },
   "dependencies": {
     "@neondatabase/auth": "0.5.0-beta",
