@@ -5,6 +5,14 @@ type PrescriptionDetailsProps = {
   prescription: Prescription;
 };
 
+function inferUtilizationManagement(prescription: Prescription) {
+  const combined = `${prescription.coverageTier} ${prescription.status}`.toLowerCase();
+  if (combined.includes("prior authorization")) return "Prior authorization applies";
+  if (combined.includes("step")) return "Step therapy applies";
+  if (combined.includes("quantity")) return "Quantity limit applies";
+  return "No utilization-management flag in this demo scenario";
+}
+
 export default function PrescriptionDetails({ prescription }: PrescriptionDetailsProps) {
   return (
     <main className="shell pageWrap">
@@ -22,6 +30,12 @@ export default function PrescriptionDetails({ prescription }: PrescriptionDetail
         {prescription.supply} - {prescription.status}
       </p>
 
+      <div className="pbmTagRow">
+        <span className="pbmTag good">{prescription.coverageTier}</span>
+        <span className="pbmTag">{prescription.pharmacy}</span>
+        <span className="pbmTag">{inferUtilizationManagement(prescription)}</span>
+      </div>
+
       <div className="detailGrid">
         <article className="panelCard">
           <h2>Prescription</h2>
@@ -34,21 +48,29 @@ export default function PrescriptionDetails({ prescription }: PrescriptionDetail
         </article>
 
         <article className="panelCard">
-          <h2>Coverage & cost</h2>
-          <div className="benefitItem"><span>Pharmacy</span><strong>{prescription.pharmacy}</strong></div>
-          <div className="benefitItem"><span>Coverage tier</span><strong>{prescription.coverageTier}</strong></div>
-          <div className="benefitItem"><span>Estimated cost</span><strong>{prescription.estimatedCost}</strong></div>
+          <h2>Coverage & member cost</h2>
+          <div className="benefitItem"><span>Dispensing pharmacy</span><strong>{prescription.pharmacy}</strong></div>
+          <div className="benefitItem"><span>Formulary / benefit tier</span><strong>{prescription.coverageTier}</strong></div>
+          <div className="benefitItem"><span>Estimated member responsibility</span><strong>{prescription.estimatedCost}</strong></div>
+          <div className="benefitItem"><span>Utilization management</span><strong>{inferUtilizationManagement(prescription)}</strong></div>
+
+          <div className="costContextBox">
+            <strong>Evaluation cost context</strong>
+            <p>This amount is based on synthetic benefit data. A production member cost would be determined from current eligibility, formulary rules, network status, accumulators and claim adjudication.</p>
+          </div>
+
           <div className="cardActionRow" style={{ marginTop: "18px" }}>
             <Link className="button primary" href={prescription.primaryActionHref}>
               {prescription.primaryActionLabel}
             </Link>
-            <Link className="button secondary" href="/pricing">Price options</Link>
+            <Link className="button secondary" href="/pricing">Compare price options</Link>
           </div>
         </article>
       </div>
 
       <article className="panelCard" style={{ marginTop: "20px" }}>
         <h2>Fill history</h2>
+        <p className="railText">Synthetic paid-fill history for evaluation. Amounts shown are prior member-paid amounts in this demo scenario.</p>
         {prescription.fillHistory.map((fill) => (
           <div className="benefitItem" key={`${prescription.id}-${fill.date}`}>
             <span>{fill.date}</span>
