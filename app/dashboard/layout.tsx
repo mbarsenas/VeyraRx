@@ -9,8 +9,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <main className="memberApp">
       <MemberSidebar />
       <section className="memberContent">
-        <div className="evaluationBanner" role="note" aria-label="VeyraRx evaluation environment notice">
-          <strong>VeyraRx evaluation environment</strong>
+        <div className="evaluationBanner" role="note" aria-label="SmarteRX evaluation environment notice">
+          <strong>SmarteRX evaluation environment</strong>
           <span>Synthetic member, benefit, pharmacy and pricing data only. No live claims or adjudication.</span>
         </div>
         {children}

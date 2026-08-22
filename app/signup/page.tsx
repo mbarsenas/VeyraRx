@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signUpWithEmail } from "./actions";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function SignUp() {
   const [state, formAction, isPending] = useActionState(signUpWithEmail, null);
 
   return <main className="signinWrap">
     <form className="signinCard" action={formAction}>
-      <div className="brandMark big" aria-hidden="true"><span className="brandV">V</span><span className="brandRx">Rx</span></div>
-      <h1>Create your account</h1><p>Set up secure access to your VeyraRx member experience.</p>
+      <BrandLogo />
+      <h1>Create your account</h1><p>Set up secure access to your SmarteRX member experience.</p>
       <label htmlFor="name">Full name</label><input id="name" name="name" type="text" required />
       <label htmlFor="email">Email address</label><input id="email" name="email" type="email" required />
       <label htmlFor="password">Password</label><input id="password" name="password" type="password" minLength={8} required />

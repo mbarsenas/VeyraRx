@@ -14,7 +14,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO prescriptions (id, member_id, slug, name, strength, supply, status, rx_number, prescriber, quantity, refills_remaining, last_fill, next_refill_label, pharmacy_name, coverage_tier, estimated_cost_cents, primary_action_label, primary_action_href)
 VALUES
-('rx-atorvastatin-20', 'member-demo-001', 'atorvastatin-20mg', 'Atorvastatin', '20 mg', '90-day supply', 'Processing', 'RX-784291', 'Dr. Amanda Chen', '90 tablets', 3, DATE '2026-05-14', 'Aug 12, 2026', 'VeyraRx Home Delivery', 'Tier 1 - Generic', 1200, 'Track order', '/dashboard/orders/atorvastatin'),
+('rx-atorvastatin-20', 'member-demo-001', 'atorvastatin-20mg', 'Atorvastatin', '20 mg', '90-day supply', 'Processing', 'RX-784291', 'Dr. Amanda Chen', '90 tablets', 3, DATE '2026-05-14', 'Aug 12, 2026', 'SmarteRX Home Delivery', 'Tier 1 - Generic', 1200, 'Track order', '/dashboard/orders/atorvastatin'),
 ('rx-lisinopril-10', 'member-demo-001', 'lisinopril-10mg', 'Lisinopril', '10 mg', '30-day supply', 'Refill available', 'RX-552104', 'Dr. Marcus Reed', '30 tablets', 2, DATE '2026-07-12', 'Now eligible', 'H-E-B Pharmacy', 'Tier 1 - Generic', 800, 'Refill now', '/dashboard/prescriptions/lisinopril-10mg/refill'),
 ('rx-metformin-er-500', 'member-demo-001', 'metformin-er-500mg', 'Metformin ER', '500 mg', '90-day supply', 'Active', 'RX-318822', 'Dr. Sophia Patel', '180 tablets', 4, DATE '2026-06-20', 'Sep 18, 2026', 'H-E-B Pharmacy', 'Tier 1 - Generic', 1000, 'View details', '/dashboard/prescriptions/metformin-er-500mg')
 ON CONFLICT (id) DO NOTHING;

@@ -47,7 +47,7 @@ async function getMember(): Promise<MemberRow> {
   );
 
   if (!rows[0]) {
-    throw new Error("This authenticated account is not linked to a VeyraRx member record.");
+    throw new Error("This authenticated account is not linked to a SmarteRX member record.");
   }
 
   cachedMember = rows[0];

@@ -24,7 +24,7 @@ export async function resolveAuthenticatedMemberId(): Promise<string> {
       1
     );
     if (!rows[0]?.id) {
-      throw new Error("This account is not linked to a VeyraRx member record.");
+      throw new Error("This account is not linked to a SmarteRX member record.");
     }
     return rows[0].id;
   }
@@ -34,7 +34,7 @@ export async function resolveAuthenticatedMemberId(): Promise<string> {
     [session.memberId]
   );
   if (!rows[0]?.id) {
-    throw new Error("This account is not linked to a VeyraRx member record.");
+    throw new Error("This account is not linked to a SmarteRX member record.");
   }
   return rows[0].id;
 }

@@ -11,7 +11,7 @@ export default function EnrollPage() {
       <form className="signinCard" action={formAction}>
         <div className="brandMark big" aria-hidden="true"><span className="brandV">V</span><span className="brandRx">Rx</span></div>
         <h1>Connect your member account</h1>
-        <p>Your VeyraRx sign-in is active. Enter the one-time enrollment code associated with your member record.</p>
+        <p>Your SmarteRX sign-in is active. Enter the one-time enrollment code associated with your member record.</p>
 
         <label htmlFor="code">Enrollment code</label>
         <input

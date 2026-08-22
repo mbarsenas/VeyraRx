@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import SiteChrome from "@/components/SiteChrome";
 
 export const metadata: Metadata = {
-  title: "VeyraRx | Pharmacy benefits made simpler",
+  title: "SmarteRX | Pharmacy benefits made simpler",
   description: "A modern pharmacy benefits and prescription management experience.",
 };
 

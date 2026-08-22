@@ -9,7 +9,7 @@ const paidClaim = {
   strength: "20 mg",
   quantity: 30,
   days_supply: 30,
-  pharmacy_name: "VeyraRx Home Delivery",
+  pharmacy_name: "SmarteRX Home Delivery",
   service_date: "2026-08-01",
   status: "Paid" as const,
   transaction_type: "Paid",

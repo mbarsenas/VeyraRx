@@ -69,3 +69,6 @@ header{background:#fff;border-bottom:1px solid #dde8e8;position:sticky;top:0;z-i
   .summaryGrid{grid-template-columns:1fr}
   .memberTopbar{flex-direction:column}
 }
+
+/* SmarteRX wordmark */
+.brandLogo{display:block;width:190px;height:auto;object-fit:contain}.brandLogo.compact{width:142px}.brand{gap:0}.memberBrand .brandLogo{width:150px}.signinCard>.brandLogo{width:180px;margin-bottom:24px}.footerBrand .brandLogo{filter:brightness(0) invert(1)}

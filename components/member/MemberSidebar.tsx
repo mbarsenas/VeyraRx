@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { member } from "@/lib/mock-data/member";
+import BrandLogo from "@/components/BrandLogo";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", exact: true },
@@ -22,10 +23,7 @@ export default function MemberSidebar() {
   return (
     <aside className="memberSidebar">
       <Link href="/" className="memberBrand">
-        <span className="brandMark" aria-hidden="true">
-          <span className="brandV">V</span><span className="brandRx">Rx</span>
-        </span>
-        <span>VeyraRx</span>
+        <BrandLogo compact />
       </Link>
 
       <div className="memberIdentity">

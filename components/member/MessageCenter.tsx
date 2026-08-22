@@ -93,7 +93,7 @@ export default function MessageCenter({ initialMessages }: { initialMessages: Me
               <span>Date</span><strong>{selected.date}</strong>
             </div>
             <p className={styles.messageBody}>{selected.body}</p>
-            <div className="workflowNotice">Messages are stored in your linked VeyraRx member record.</div>
+            <div className="workflowNotice">Messages are stored in your linked SmarteRX member record.</div>
           </>
         ) : (
           <div className={styles.empty}><h2>Select a message</h2><p>Choose a message from the inbox to view it.</p></div>

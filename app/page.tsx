@@ -67,7 +67,7 @@ export default function Home() {
             <span className="eyebrow">Pharmacy benefits made simpler</span>
             <h1>Medication access that puts people first.</h1>
             <p className="lead">
-              VeyraRx brings prescriptions, pricing, benefits and pharmacy tools into one
+              SmarteRX brings prescriptions, pricing, benefits and pharmacy tools into one
               clear experience built around the member.
             </p>
             <div className="buttonRow">
@@ -117,7 +117,7 @@ export default function Home() {
             <div className="deliveryBadge">Free standard delivery</div>
             <div className="deliveryPackage">
               <span className="deliveryPackageMark">V</span>
-              <span className="deliveryPackageName">VeyraRx</span>
+              <span className="deliveryPackageName">SmarteRX</span>
               <small>Home delivery</small>
             </div>
             <div className="deliveryPill deliveryPillOne" />
