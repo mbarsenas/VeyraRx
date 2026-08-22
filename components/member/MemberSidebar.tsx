@@ -8,6 +8,7 @@ const navItems = [
   { href: "/dashboard", label: "Overview", exact: true },
   { href: "/dashboard/reviewer-scenarios", label: "Reviewer scenarios" },
   { href: "/dashboard/prescriptions", label: "Prescriptions" },
+  { href: "/dashboard/claims", label: "Claims" },
   { href: "/dashboard/orders", label: "Orders" },
   { href: "/dashboard/benefits", label: "Benefits & coverage" },
   { href: "/dashboard/pharmacy", label: "Pharmacy" },
