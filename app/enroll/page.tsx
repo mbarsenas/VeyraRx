@@ -1,20 +1,35 @@
-import { redirect } from "next/navigation";
-import { getCurrentMemberSession } from "@/lib/auth/session";
+"use client";
 
-export default async function EnrollPage() {
-  const session = await getCurrentMemberSession();
-  if (!session) redirect("/signin");
+import { useActionState } from "react";
+import { enrollMember } from "./actions";
+
+export default function EnrollPage() {
+  const [state, formAction, isPending] = useActionState(enrollMember, null);
 
   return (
     <main className="signinWrap">
-      <section className="signinCard">
+      <form className="signinCard" action={formAction}>
         <div className="brandMark big" aria-hidden="true"><span className="brandV">V</span><span className="brandRx">Rx</span></div>
         <h1>Connect your member account</h1>
-        <p>Your VeyraRx sign-in is active, but it is not yet linked to a pharmacy-benefit member record.</p>
-        <p className="note">For this production-foundation build, member linking is being completed server-side so we can validate authenticated identity and RLS safely.</p>
-        <a className="button primary full" href="/dashboard">Try dashboard again</a>
+        <p>Your VeyraRx sign-in is active. Enter the one-time enrollment code associated with your member record.</p>
+
+        <label htmlFor="code">Enrollment code</label>
+        <input
+          id="code"
+          name="code"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          placeholder="Enter enrollment code"
+          required
+        />
+
+        {state?.error ? <p className="note" role="alert">{state.error}</p> : null}
+
+        <button className="button primary full" type="submit" disabled={isPending}>
+          {isPending ? "Connecting..." : "Connect member account"}
+        </button>
         <a className="button secondary full" href="/signin">Return to sign in</a>
-      </section>
+      </form>
     </main>
   );
 }
