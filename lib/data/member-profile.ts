@@ -1,10 +1,11 @@
 import type { MemberProfile } from "@/lib/domain/profile";
 import { getCurrentMemberSession } from "@/lib/auth/session";
-import { dataApiSelect, dataApiUpdate } from "@/lib/data/data-api";
+import { dataApiSelect, dataApiUpdate, eq } from "@/lib/data/data-api";
 import { neonSqlExecutor } from "@/lib/data/neon-sql";
 
 type ProfileRow = {
   id?: string;
+  external_auth_id?: string | null;
   email: string | null;
   phone: string | null;
   address_line1: string | null;
@@ -27,7 +28,15 @@ async function resolveAuthenticatedMemberId(): Promise<string> {
   if (!session) throw new Error("An authenticated member session is required.");
 
   if (useDataApi()) {
-    const rows = await dataApiSelect<{ id: string }>("members", "id", [], undefined, 1);
+    // Do not trust an arbitrary member id from the browser. The Data API request
+    // carries the authenticated JWT and RLS remains the final authorization boundary.
+    const rows = await dataApiSelect<{ id: string; external_auth_id: string | null }>(
+      "members",
+      "id,external_auth_id",
+      [`external_auth_id=${eq(session.memberId)}`],
+      undefined,
+      1
+    );
     if (!rows[0]?.id) throw new Error("This account is not linked to a VeyraRx member record.");
     return rows[0].id;
   }
@@ -48,11 +57,17 @@ export async function getAuthenticatedMemberProfile(): Promise<MemberProfile> {
   const session = await getCurrentMemberSession();
   if (!session) throw new Error("An authenticated member session is required.");
 
+  const memberId = await resolveAuthenticatedMemberId();
   let row: ProfileRow | undefined;
   if (useDataApi()) {
-    row = (await dataApiSelect<ProfileRow>("members", "email,phone,address_line1,address_line2,city,state,postal_code,communication_preference,paperless,refill_reminders,order_updates", [], undefined, 1))[0];
+    row = (await dataApiSelect<ProfileRow>(
+      "members",
+      "id,email,phone,address_line1,address_line2,city,state,postal_code,communication_preference,paperless,refill_reminders,order_updates",
+      [`id=${eq(memberId)}`],
+      undefined,
+      1
+    ))[0];
   } else {
-    const memberId = await resolveAuthenticatedMemberId();
     row = (await neonSqlExecutor<ProfileRow>(
       `SELECT email, phone, address_line1, address_line2, city, state, postal_code,
               communication_preference, paperless, refill_reminders, order_updates
@@ -76,11 +91,13 @@ export async function getAuthenticatedMemberProfile(): Promise<MemberProfile> {
     communicationPreference: row.communication_preference ?? "Email",
     paperless: row.paperless ?? true,
     refillReminders: row.refill_reminders ?? true,
-    orderUpdates: row.order_updates ?? true,
+    orderUpdates: row.orderUpdates ?? true,
   };
 }
 
 export async function updateAuthenticatedMemberProfile(profile: MemberProfile): Promise<void> {
+  const memberId = await resolveAuthenticatedMemberId();
+
   if (useDataApi()) {
     await dataApiUpdate("members", {
       phone: profile.phone.trim() || null,
@@ -94,11 +111,10 @@ export async function updateAuthenticatedMemberProfile(profile: MemberProfile): 
       refill_reminders: profile.refillReminders,
       order_updates: profile.orderUpdates,
       updated_at: new Date().toISOString(),
-    }, []);
+    }, [`id=${eq(memberId)}`]);
     return;
   }
 
-  const memberId = await resolveAuthenticatedMemberId();
   await neonSqlExecutor(
     `UPDATE members
         SET phone = $2,
