@@ -18,6 +18,8 @@ function inferUtilizationManagement(prescription: Prescription) {
 
 export default function PrescriptionDetails({ prescription, scenario }: PrescriptionDetailsProps) {
   const suffix = scenario ? `?scenario=${scenario.id}` : "";
+  const displayedMemberResponsibility = scenario?.economics.memberResponsibility ?? prescription.estimatedCost;
+  const displayedCostLabel = scenario ? "Scenario member responsibility" : "Estimated member responsibility";
 
   return (
     <main className="shell pageWrap">
@@ -58,12 +60,16 @@ export default function PrescriptionDetails({ prescription, scenario }: Prescrip
           <h2>Coverage & member cost</h2>
           <div className="benefitItem"><span>Dispensing pharmacy</span><strong>{prescription.pharmacy}</strong></div>
           <div className="benefitItem"><span>Formulary / benefit tier</span><strong>{prescription.coverageTier}</strong></div>
-          <div className="benefitItem"><span>Estimated member responsibility</span><strong>{prescription.estimatedCost}</strong></div>
+          <div className="benefitItem"><span>{displayedCostLabel}</span><strong>{displayedMemberResponsibility}</strong></div>
           <div className="benefitItem"><span>Utilization management</span><strong>{inferUtilizationManagement(prescription)}</strong></div>
 
           <div className="costContextBox">
             <strong>Evaluation cost context</strong>
-            <p>This amount is based on synthetic benefit data. A production member cost would be determined from current eligibility, formulary rules, network status, accumulators and claim adjudication.</p>
+            <p>
+              {scenario
+                ? `The active ${scenario.memberLabel} evaluation scenario overrides the underlying prescription estimate so the reviewer sees one consistent modeled member-responsibility value throughout the scenario. No live claim is being adjudicated.`
+                : "This amount is based on synthetic benefit data. A production member cost would be determined from current eligibility, formulary rules, network status, accumulators and claim adjudication."}
+            </p>
           </div>
 
           <div className="cardActionRow" style={{ marginTop: "18px" }}>
