@@ -16,6 +16,46 @@ function utilizationManagementLabel(quote: MedicationPriceQuote) {
   return "No UM flag in demo quote";
 }
 
+const scenarioGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+  gap: "10px",
+  marginTop: "18px",
+} as const;
+
+const scenarioMetricStyle = {
+  border: "1px solid #dce7e6",
+  borderRadius: "12px",
+  background: "#f7faf9",
+  padding: "13px 14px",
+  minHeight: "72px",
+} as const;
+
+const scenarioLabelStyle = {
+  display: "block",
+  marginBottom: "7px",
+  color: "#647b80",
+  fontSize: "11px",
+  fontWeight: 800,
+  letterSpacing: "1px",
+  textTransform: "uppercase",
+} as const;
+
+const scenarioValueStyle = {
+  display: "block",
+  color: "#173b45",
+  fontSize: "14px",
+  lineHeight: 1.35,
+} as const;
+
+const interpretationStyle = {
+  marginTop: "12px",
+  border: "1px solid #dce7e6",
+  borderRadius: "12px",
+  background: "#f7faf9",
+  padding: "14px 16px",
+} as const;
+
 export default function PricingSearch({ scenario }: { scenario?: PbmDemoScenario }) {
   const [search, setSearch] = useState(initialSearch);
   const [results, setResults] = useState<MedicationPriceQuote[]>([]);
@@ -48,19 +88,28 @@ export default function PricingSearch({ scenario }: { scenario?: PbmDemoScenario
   return (
     <>
       {scenario && (
-        <article className="panelCard pbmScenarioContext" style={{ marginTop: "28px" }}>
-          <div className="panelHeader"><div><span className="eyebrow">{scenario.memberLabel} · PBM evaluation</span><h2>{scenario.title}</h2><p className="railText">{scenario.focus}</p></div></div>
-          <div className="scenarioEconomicsGrid">
-            <div><span>Medication</span><strong>{scenario.economics.medication}</strong></div>
-            <div><span>Plan-negotiated amount</span><strong>{scenario.economics.negotiatedAmount}</strong></div>
-            <div><span>Deductible applied</span><strong>{scenario.economics.deductibleApplied}</strong></div>
-            <div><span>Plan paid</span><strong>{scenario.economics.planPaid}</strong></div>
-            <div><span>Member responsibility</span><strong>{scenario.economics.memberResponsibility}</strong></div>
-            <div><span>Cost share</span><strong>{scenario.economics.copayOrCoinsurance}</strong></div>
-            <div><span>Coverage</span><strong>{scenario.economics.coverageStatus}</strong></div>
-            <div><span>Network</span><strong>{scenario.economics.networkStatus}</strong></div>
+        <article className="panelCard pbmScenarioContext" style={{ marginTop: "28px", borderLeft: "4px solid #8dbb35" }}>
+          <div className="panelHeader">
+            <div>
+              <span className="eyebrow">{scenario.memberLabel} · PBM evaluation</span>
+              <h2>{scenario.title}</h2>
+              <p className="railText">{scenario.focus}</p>
+            </div>
           </div>
-          <div className="costContextBox"><strong>Scenario interpretation</strong><p>{scenario.economics.accumulatorContext} Utilization management: {scenario.economics.utilizationManagement}.</p></div>
+          <div className="scenarioEconomicsGrid" style={scenarioGridStyle}>
+            <div style={scenarioMetricStyle}><span style={scenarioLabelStyle}>Medication</span><strong style={scenarioValueStyle}>{scenario.economics.medication}</strong></div>
+            <div style={scenarioMetricStyle}><span style={scenarioLabelStyle}>Plan-negotiated amount</span><strong style={scenarioValueStyle}>{scenario.economics.negotiatedAmount}</strong></div>
+            <div style={scenarioMetricStyle}><span style={scenarioLabelStyle}>Deductible applied</span><strong style={scenarioValueStyle}>{scenario.economics.deductibleApplied}</strong></div>
+            <div style={scenarioMetricStyle}><span style={scenarioLabelStyle}>Plan paid</span><strong style={scenarioValueStyle}>{scenario.economics.planPaid}</strong></div>
+            <div style={scenarioMetricStyle}><span style={scenarioLabelStyle}>Member responsibility</span><strong style={scenarioValueStyle}>{scenario.economics.memberResponsibility}</strong></div>
+            <div style={scenarioMetricStyle}><span style={scenarioLabelStyle}>Cost share</span><strong style={scenarioValueStyle}>{scenario.economics.copayOrCoinsurance}</strong></div>
+            <div style={scenarioMetricStyle}><span style={scenarioLabelStyle}>Formulary / coverage</span><strong style={scenarioValueStyle}>{scenario.economics.coverageStatus}</strong></div>
+            <div style={scenarioMetricStyle}><span style={scenarioLabelStyle}>Network</span><strong style={scenarioValueStyle}>{scenario.economics.networkStatus}</strong></div>
+          </div>
+          <div className="costContextBox" style={interpretationStyle}>
+            <strong>Scenario interpretation</strong>
+            <p style={{ margin: "6px 0 0", lineHeight: 1.5 }}>{scenario.economics.accumulatorContext} Utilization management: {scenario.economics.utilizationManagement}.</p>
+          </div>
         </article>
       )}
 
