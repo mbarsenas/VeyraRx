@@ -3,6 +3,18 @@ import { getAuthenticatedMemberClaims } from "@/lib/data/member-claims";
 
 export const dynamic = "force-dynamic";
 
+function claimAmountLabel(status: string) {
+  if (status === "Rejected") return "Not processed";
+  if (status === "Reversed") return "Amount reversed";
+  return "Member responsibility";
+}
+
+function claimAmountValue(status: string, memberResponsibility: string) {
+  if (status === "Rejected") return "Not available";
+  if (status === "Reversed") return "No current amount due";
+  return memberResponsibility;
+}
+
 export default async function ClaimsPage() {
   const claims = await getAuthenticatedMemberClaims();
 
@@ -31,15 +43,25 @@ export default async function ClaimsPage() {
           <div className="claims-list">
             {claims.map((claim) => (
               <article key={claim.id} className="claim-card">
-                <div>
-                  <p className="eyebrow">{claim.status.toUpperCase()}</p>
-                  <h3>{claim.medicationName}{claim.strength ? ` ${claim.strength}` : ""}</h3>
-                  <p>{claim.serviceDate}{claim.pharmacyName ? ` · ${claim.pharmacyName}` : ""}</p>
+                <div className="claim-card-main">
+                  <span className={`claim-status claim-status-${claim.status.toLowerCase()}`}>{claim.status}</span>
+                  <div className="claim-medication">
+                    <h3>{claim.medicationName}{claim.strength ? ` ${claim.strength}` : ""}</h3>
+                    <p className="claim-reference">Claim {claim.claimReference}</p>
+                  </div>
+                  <dl className="claim-meta">
+                    <div><dt>Service date</dt><dd>{claim.serviceDate}</dd></div>
+                    <div><dt>Pharmacy</dt><dd>{claim.pharmacyName ?? "Not available"}</dd></div>
+                  </dl>
                 </div>
-                <div>
-                  <p>Member responsibility</p>
-                  <strong>{claim.memberResponsibility}</strong>
-                  <Link href={`/dashboard/claims/${claim.id}`}>View claim details →</Link>
+                <div className="claim-card-action">
+                  <div className="claim-amount">
+                    <span>{claimAmountLabel(claim.status)}</span>
+                    <strong>{claimAmountValue(claim.status, claim.memberResponsibility)}</strong>
+                  </div>
+                  <Link className="claim-detail-link" href={`/dashboard/claims/${claim.id}`}>
+                    View claim details <span aria-hidden="true">→</span>
+                  </Link>
                 </div>
               </article>
             ))}
