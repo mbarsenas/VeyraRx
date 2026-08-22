@@ -5,6 +5,7 @@ import PrescriptionRow from "@/components/member/PrescriptionRow";
 import PlanCard from "@/components/member/PlanCard";
 import PharmacyCard from "@/components/member/PharmacyCard";
 import ActivityTimeline from "@/components/member/ActivityTimeline";
+import PbmScenarioPanel from "@/components/member/PbmScenarioPanel";
 import { getMemberRepository } from "@/lib/data";
 
 export default async function DashboardPage() {
@@ -24,6 +25,8 @@ export default async function DashboardPage() {
         title={`Good evening, ${member.firstName}.`}
         description="Here is a quick look at your prescriptions, benefits and recent activity."
       />
+
+      <PbmScenarioPanel />
 
       <section className="summaryGrid">
         <SummaryCard label="Active prescriptions" value={prescriptions.length} detail={`${refillCount} refill available`} />
