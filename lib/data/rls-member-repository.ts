@@ -2,6 +2,7 @@ import type { MemberRepository } from "@/lib/data/member-repository";
 import type { ActivityItem, MemberSummary, Prescription } from "@/lib/domain/member";
 import type { FormularyMedication, MemberBenefits, PriorAuthorization } from "@/lib/domain/benefits";
 import type { PharmacyLocation, PharmacyNetworkStatus } from "@/lib/domain/pharmacy";
+import { getCurrentMemberSession } from "@/lib/auth/session";
 import { dataApiSelect, dataApiUpdate, eq } from "@/lib/data/data-api";
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
@@ -9,6 +10,7 @@ const formatDate = (value: string) => new Intl.DateTimeFormat("en-US", { month: 
 
 type MemberRow = {
   id: string;
+  external_auth_id?: string | null;
   first_name: string;
   last_initial: string;
   initials: string;
@@ -28,10 +30,28 @@ type FormularyRow = { name: string; strength: string; tier: string; coverage_sta
 type PriorAuthRow = { medication: string; status: string; requirement: string; last_updated: string };
 type ActivityRow = { title: string; display_time: string };
 
+let cachedMember: MemberRow | undefined;
+
 async function getMember(): Promise<MemberRow> {
-  const rows = await dataApiSelect<MemberRow>("members", "id,first_name,last_initial,initials,member_id_last4,plan_id,preferred_pharmacy_id,potential_savings_cents", [], undefined, 1);
-  if (!rows[0]) throw new Error("Authenticated member record was not found.");
-  return rows[0];
+  if (cachedMember) return cachedMember;
+
+  const session = await getCurrentMemberSession();
+  if (!session) throw new Error("An authenticated member session is required.");
+
+  const rows = await dataApiSelect<MemberRow>(
+    "members",
+    "id,external_auth_id,first_name,last_initial,initials,member_id_last4,plan_id,preferred_pharmacy_id,potential_savings_cents",
+    [`external_auth_id=${eq(session.memberId)}`],
+    undefined,
+    1
+  );
+
+  if (!rows[0]) {
+    throw new Error("This authenticated account is not linked to a VeyraRx member record.");
+  }
+
+  cachedMember = rows[0];
+  return cachedMember;
 }
 
 async function getPlan(planId: string): Promise<PlanRow> {
@@ -129,9 +149,11 @@ export function createRlsMemberRepository(): MemberRepository {
       return (await getMember()).preferred_pharmacy_id;
     },
     async setPreferredPharmacy(id: string): Promise<void> {
+      const member = await getMember();
       const pharmacy = (await dataApiSelect<PharmacyRow>("pharmacies", "id,name,slug,address_line1,city,state,postal_code,distance_label,phone,hours_label,network_status,pickup,ninety_day_eligible,drive_thru", [`id=${eq(id)}`], undefined, 1))[0];
       if (!pharmacy || pharmacy.network_status === "Out of network") throw new Error("The selected pharmacy is not eligible to be preferred.");
-      await dataApiUpdate("members", { preferred_pharmacy_id: id, updated_at: new Date().toISOString() }, []);
+      await dataApiUpdate("members", { preferred_pharmacy_id: id, updated_at: new Date().toISOString() }, [`id=${eq(member.id)}`]);
+      cachedMember = { ...member, preferred_pharmacy_id: id };
     },
   };
 }
