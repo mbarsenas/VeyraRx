@@ -1,14 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import PharmacyLocationCard from "@/components/member/PharmacyLocationCard";
-import { pharmacyLocations } from "@/lib/mock-data/pharmacies";
+import type { PharmacyLocation } from "@/lib/domain/pharmacy";
+import { setPreferredPharmacyAction } from "@/app/dashboard/pharmacy/actions";
 
-export default function PharmacySearch() {
+type Props = {
+  pharmacyLocations: PharmacyLocation[];
+  initialPreferredId: string | null;
+};
+
+export default function PharmacySearch({ pharmacyLocations, initialPreferredId }: Props) {
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
-  const [preferredId, setPreferredId] = useState("heb-wurzbach");
+  const [preferredId, setPreferredId] = useState(initialPreferredId);
   const [notice, setNotice] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const results = useMemo(() => {
     const value = submittedQuery.trim().toLowerCase();
@@ -16,13 +23,21 @@ export default function PharmacySearch() {
     return pharmacyLocations.filter((pharmacy) =>
       [pharmacy.name, pharmacy.address, pharmacy.cityStateZip].some((field) => field.toLowerCase().includes(value))
     );
-  }, [submittedQuery]);
+  }, [pharmacyLocations, submittedQuery]);
 
   function selectPreferred(id: string) {
     const pharmacy = pharmacyLocations.find((item) => item.id === id);
     if (!pharmacy || pharmacy.networkStatus === "Out of network") return;
-    setPreferredId(id);
-    setNotice(`${pharmacy.name} is now your preferred pharmacy for this prototype session.`);
+
+    startTransition(async () => {
+      try {
+        await setPreferredPharmacyAction(id);
+        setPreferredId(id);
+        setNotice(`${pharmacy.name} is now your preferred pharmacy.`);
+      } catch {
+        setNotice("We could not update your preferred pharmacy. Please try again.");
+      }
+    });
   }
 
   return (
@@ -74,7 +89,10 @@ export default function PharmacySearch() {
         </article>
       )}
 
-      <p className="demoDisclosure">Prototype pharmacy network only. Search results and preferred-pharmacy changes are not saved.</p>
+      <p className="demoDisclosure">
+        Prototype pharmacy network data. Preferred-pharmacy changes are saved to your member record.
+        {isPending ? " Saving preference..." : ""}
+      </p>
     </>
   );
 }
