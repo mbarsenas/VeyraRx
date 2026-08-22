@@ -1,4 +1,5 @@
-﻿import "./globals.css";
+import "./globals.css";
+import "./pricing/pricing.css";
 import type { Metadata } from "next";
 import SiteChrome from "@/components/SiteChrome";
 
