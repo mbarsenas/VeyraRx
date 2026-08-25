@@ -48,6 +48,8 @@ export default async function ClaimsPage() {
                   <div className="claim-medication">
                     <h3>{claim.medicationName}{claim.strength ? ` ${claim.strength}` : ""}</h3>
                     <p className="claim-reference">Claim {claim.claimReference}</p>
+                    {claim.status === "Rejected" && claim.rejectMessage ? <p className="claim-card-context">{claim.rejectMessage}</p> : null}
+                    {claim.status === "Reversed" ? <p className="claim-card-context">Reverses claim {claim.reversalOfClaimReference ?? "shown in the transaction record"}</p> : null}
                   </div>
                   <dl className="claim-meta">
                     <div><dt>Service date</dt><dd>{claim.serviceDate}</dd></div>

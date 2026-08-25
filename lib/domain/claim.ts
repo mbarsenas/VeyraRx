@@ -2,6 +2,7 @@ export type ClaimStatus = "Paid" | "Rejected" | "Reversed" | "Pending";
 
 export type MemberClaim = {
   id: string;
+  prescriptionId?: string;
   claimReference: string;
   medicationName: string;
   strength?: string;
@@ -20,4 +21,11 @@ export type MemberClaim = {
   coinsurance: string;
   rejectCode?: string;
   rejectMessage?: string;
+  reversalOfClaimId?: string;
+  reversalOfClaimReference?: string;
+};
+
+export type ClaimAccumulators = {
+  deductibleCents: number;
+  outOfPocketCents: number;
 };

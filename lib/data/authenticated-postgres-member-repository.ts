@@ -29,7 +29,7 @@ export function createAuthenticatedPostgresMemberRepository(sql: SqlExecutor): M
     }
 
     throw new Error(
-      "This authenticated account is not linked to a VeyraRx member record. Complete member enrollment before accessing protected health-plan data."
+      "This authenticated account is not linked to a SmarteRX member record. Complete member enrollment before accessing protected health-plan data."
     );
   }
 

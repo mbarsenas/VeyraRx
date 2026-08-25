@@ -5,21 +5,26 @@ import CoverageTierCard from "@/components/member/CoverageTierCard";
 import PbmScenarioContext from "@/components/member/PbmScenarioContext";
 import { getMemberRepository } from "@/lib/data";
 import { getPbmDemoScenario } from "@/lib/demo/pbm-scenarios";
+import { getAuthenticatedMemberClaimAccumulators } from "@/lib/data/member-claims";
 
 export default async function MemberBenefitsPage({ searchParams }: { searchParams: Promise<{ scenario?: string }> }) {
   const { scenario: scenarioId } = await searchParams;
   const scenario = getPbmDemoScenario(scenarioId);
   const repository = getMemberRepository();
-  const [member, benefits] = await Promise.all([
+  const [member, benefits, claimAccumulators] = await Promise.all([
     repository.getMemberSummary(),
     repository.getBenefits(),
+    getAuthenticatedMemberClaimAccumulators(),
   ]);
 
+  const deductibleUsed = claimAccumulators.deductibleCents / 100;
+  const outOfPocketUsed = claimAccumulators.outOfPocketCents / 100;
+
   const deductiblePercent = benefits.deductibleTotal > 0
-    ? Math.round((benefits.deductibleUsed / benefits.deductibleTotal) * 100)
+    ? Math.round((deductibleUsed / benefits.deductibleTotal) * 100)
     : 0;
   const outOfPocketPercent = benefits.outOfPocketMax > 0
-    ? Math.round((benefits.outOfPocketUsed / benefits.outOfPocketMax) * 100)
+    ? Math.round((outOfPocketUsed / benefits.outOfPocketMax) * 100)
     : 0;
   const suffix = `?scenario=${scenario.id}`;
 
@@ -34,8 +39,8 @@ export default async function MemberBenefitsPage({ searchParams }: { searchParam
       {scenarioId && <PbmScenarioContext scenario={scenario} />}
 
       <section className="summaryGrid">
-        <SummaryCard label="Rx deductible accumulator" value={`$${benefits.deductibleUsed.toLocaleString()}`} detail={`${deductiblePercent}% of $${benefits.deductibleTotal.toLocaleString()} plan-year deductible`} progressPercent={deductiblePercent} />
-        <SummaryCard label="Rx out-of-pocket accumulator" value={`$${benefits.outOfPocketUsed.toLocaleString()}`} detail={`${outOfPocketPercent}% of $${benefits.outOfPocketMax.toLocaleString()} plan-year maximum`} progressPercent={outOfPocketPercent} />
+        <SummaryCard label="Rx deductible accumulator" value={`$${deductibleUsed.toLocaleString()}`} detail={`${deductiblePercent}% of $${benefits.deductibleTotal.toLocaleString()} based on paid claims`} progressPercent={deductiblePercent} />
+        <SummaryCard label="Rx out-of-pocket accumulator" value={`$${outOfPocketUsed.toLocaleString()}`} detail={`${outOfPocketPercent}% of $${benefits.outOfPocketMax.toLocaleString()} based on paid claims`} progressPercent={outOfPocketPercent} />
         <SummaryCard label="Benefit plan" value={member.plan.name} detail={benefits.planYear} />
         <SummaryCard label="Estimated savings opportunities" value={`$${member.potentialSavings}`} detail="Synthetic demo estimate" />
       </section>

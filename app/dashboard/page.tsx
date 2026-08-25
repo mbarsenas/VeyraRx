@@ -7,12 +7,14 @@ import PharmacyCard from "@/components/member/PharmacyCard";
 import ActivityTimeline from "@/components/member/ActivityTimeline";
 import PbmScenarioPanel from "@/components/member/PbmScenarioPanel";
 import { getMemberRepository } from "@/lib/data";
+import { getAuthenticatedMemberClaims } from "@/lib/data/member-claims";
 
 export default async function DashboardPage() {
   const repository = getMemberRepository();
-  const [member, prescriptions] = await Promise.all([
+  const [member, prescriptions, claims] = await Promise.all([
     repository.getMemberSummary(),
     repository.getPrescriptions(),
+    getAuthenticatedMemberClaims(),
   ]);
 
   const deductiblePercent = Math.round((member.plan.deductibleUsed / member.plan.deductibleTotal) * 100);
@@ -53,6 +55,21 @@ export default async function DashboardPage() {
           </article>
 
           <ActivityTimeline />
+          <article className="panelCard">
+            <div className="panelHeader">
+              <div><span className="eyebrow">Recent claims</span><h2>Latest pharmacy activity</h2></div>
+              <Link href="/dashboard/claims">View all claims</Link>
+            </div>
+            <div className="prescriptionList">
+              {claims.slice(0, 3).map((claim) => (
+                <div className="benefitItem" key={claim.id}>
+                  <span>{claim.serviceDate} · {claim.status}</span>
+                  <strong><Link href={`/dashboard/claims/${claim.id}`}>{claim.medicationName} {claim.strength}</Link></strong>
+                </div>
+              ))}
+              {claims.length === 0 ? <p className="railText">No pharmacy claims are available yet.</p> : null}
+            </div>
+          </article>
         </div>
 
         <aside className="dashboardRail">

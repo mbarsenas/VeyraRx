@@ -25,7 +25,7 @@ export default function MemberSidebar() {
         <span className="brandMark" aria-hidden="true">
           <span className="brandV">V</span><span className="brandRx">Rx</span>
         </span>
-        <span>VeyraRx</span>
+        <span>SmarteRX</span>
       </Link>
 
       <div className="memberIdentity">

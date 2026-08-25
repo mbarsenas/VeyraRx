@@ -56,6 +56,13 @@ export default async function ClaimDetailPage({ params }: { params: Promise<{ id
             <p>Contact your pharmacy or plan support for help resolving this claim before the prescription is filled.</p>
           </div>
         ) : null}
+        {claim.status === "Reversed" ? (
+          <div className="claim-reversal-callout">
+            <span className="claim-callout-label">Original transaction</span>
+            <h2>Claim {claim.reversalOfClaimReference ?? "reference unavailable"}</h2>
+            <p>This reversal cancels the original transaction. It does not create a new amount for you to pay.</p>
+          </div>
+        ) : null}
       </section>
 
       <section className="dashboard-card claim-economics-card">
