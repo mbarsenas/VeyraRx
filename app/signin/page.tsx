@@ -16,7 +16,7 @@ export default function SignIn() {
       {state?.error ? <p className="note" role="alert">{state.error}</p> : null}
       <button className="button primary full" type="submit" disabled={isPending}>{isPending ? "Signing in..." : "Sign in"}</button>
       <Link className="textButton centeredBtn" href="/forgot-password">Forgot password?</Link>
-      <hr/><p className="smallCenter">New to VeyraRx?</p><Link className="button secondary full" href="/signup">Create account</Link>
+      <hr/><p className="smallCenter">New to SmarteRX?</p><Link className="button secondary full" href="/signup">Create account</Link>
     </form>
   </main>;
 }

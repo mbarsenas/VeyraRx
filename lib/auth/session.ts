@@ -9,7 +9,7 @@ export type MemberSession = {
 export type AuthMode = "demo" | "production";
 
 export async function getCurrentMemberSession(): Promise<MemberSession | null> {
-  const mode = (process.env.VEYRA_AUTH_MODE ?? "demo") as AuthMode;
+  const mode = (process.env.VEYRA_AUTH_MODE ?? (process.env.NODE_ENV === "production" ? "production" : "demo")) as AuthMode;
 
   if (mode === "demo") {
     return {

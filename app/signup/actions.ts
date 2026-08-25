@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth/server";
 import { redirect } from "next/navigation";
+import { recordAuthEvent } from "@/lib/auth/audit";
 
 export async function signUpWithEmail(
   _prevState: { error: string } | null,
@@ -16,5 +17,7 @@ export async function signUpWithEmail(
   const { error } = await auth.signUp.email({ email, name, password });
   if (error) return { error: error.message || "Failed to create account." };
 
-  redirect("/dashboard");
+  await auth.sendVerificationEmail({ email, callbackURL: "/dashboard" });
+  await recordAuthEvent("account_created", undefined, { email: email.toLowerCase(), verificationRequested: true });
+  redirect("/signin?verification=sent");
 }
