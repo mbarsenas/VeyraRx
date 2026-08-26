@@ -103,6 +103,16 @@ Required production settings include:
 
 Secrets must remain in the deployment platform and must never be committed, pasted into tickets, screenshots, logs, or this document.
 
+### Browser and transport protections
+
+- All application routes receive a Content Security Policy that limits content to the application and permits network connections only to the application and Neon HTTPS/WebSocket endpoints.
+- Framing is blocked with both CSP `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
+- MIME sniffing is disabled, referrer information is restricted, and cross-origin opener/resource policies default to same-origin.
+- Camera, microphone, geolocation, payment, and USB browser capabilities are disabled because the application does not require them.
+- HTTPS is reinforced with a one-year HSTS policy.
+- Production CSP excludes `unsafe-eval`; local development permits it for Next.js development tooling.
+- The current static CSP permits inline Next.js scripts and styles. A nonce-based CSP remains a future hardening option if the application moves to request-scoped CSP generation.
+
 ## Verification evidence
 
 ### Two-user isolation test
@@ -131,6 +141,7 @@ The repository test suite verifies:
 - PostgreSQL order and message fallbacks retain member scoping.
 - Failed-sign-in metadata is normalized and restricted to approved fields.
 - Authentication rate-limit thresholds, normalization, blocking, and storage-failure behavior are covered by automated tests.
+- Required security headers and production/development CSP differences are covered by automated tests.
 
 Run before security-relevant releases:
 
@@ -183,7 +194,7 @@ Before each production release:
 - Add IP- or device-aware abuse controls if production traffic shows distributed attacks against many email addresses.
 - Define audit retention, access-review, export, and deletion policies.
 - Add alerting for repeated authentication failures and audit-write failures.
-- Add Content Security Policy and review other production security headers.
+- Evaluate a request-scoped nonce-based CSP to remove inline script/style allowances.
 - Review dependency and secret scanning in CI.
 - Remove or feature-gate reviewer scenarios before a non-evaluation release.
 - Replace remaining synthetic plan/product terminology where member-facing branding requires it.
@@ -198,3 +209,4 @@ Before each production release:
 | 2026-08-26 | Added CI security regression tests for authentication, verification, enrollment routing, and member-scoped repositories. |
 | 2026-08-26 | Added privacy-limited `sign_in_failed` audit telemetry and regression coverage. |
 | 2026-08-26 | Added shared rate limiting for sign-in, verification-email, and password-reset requests. |
+| 2026-08-26 | Added Content Security Policy, anti-framing, transport, referrer, MIME, cross-origin, and browser-permission headers. |
