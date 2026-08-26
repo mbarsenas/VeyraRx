@@ -35,7 +35,7 @@ export default async function DashboardPage() {
 
       <section className="summaryGrid">
         <SummaryCard label="Active prescriptions" value={prescriptions.length} detail={`${refillCount} refill available`} />
-        <SummaryCard label="Orders in progress" value={processingCount} detail="Estimated arrival Aug 14" />
+        <SummaryCard label="Orders in progress" value={processingCount} detail={processingCount > 0 ? "Estimated arrival Aug 14" : "No active deliveries"} />
         <SummaryCard
           label="Plan deductible"
           value={`$${deductibleUsed.toLocaleString()} / $${member.plan.deductibleTotal.toLocaleString()}`}

@@ -14,10 +14,11 @@ export async function signUpWithEmail(
 
   if (!email || !name || !password) return { error: "Name, email, and password are required." };
 
-  const { error } = await auth.signUp.email({ email, name, password });
+  const { data, error } = await auth.signUp.email({ email, name, password });
   if (error) return { error: error.message || "Failed to create account." };
 
   await auth.sendVerificationEmail({ email, callbackURL: "/dashboard" });
-  await recordAuthEvent("account_created", undefined, { email: email.toLowerCase(), verificationRequested: true });
+  await recordAuthEvent("account_created", data?.user?.id, { email: email.toLowerCase() });
+  await recordAuthEvent("verification_email_requested", data?.user?.id, { email: email.toLowerCase() });
   redirect("/signin?verification=sent");
 }

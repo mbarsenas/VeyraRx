@@ -2,6 +2,10 @@
 
 import type { MemberProfile } from "@/lib/domain/profile";
 import { updateAuthenticatedMemberProfile } from "@/lib/data/member-profile";
+import { auth } from "@/lib/auth/server";
+import { getCurrentMemberSession } from "@/lib/auth/session";
+import { recordAuthEvent } from "@/lib/auth/audit";
+import { revalidatePath } from "next/cache";
 
 export type SaveProfileResult = {
   ok: boolean;
@@ -37,4 +41,12 @@ export async function saveMemberProfile(profile: MemberProfile): Promise<SavePro
     console.error("Unable to save member profile", error);
     return { ok: false, message: "Unable to save profile. Please try again." };
   }
+}
+
+export async function signOutOtherSessions() {
+  const session = await getCurrentMemberSession();
+  const { error } = await auth.revokeOtherSessions();
+  if (error) throw new Error(error.message || "Unable to sign out other sessions.");
+  await recordAuthEvent("other_sessions_revoked", session?.memberId);
+  revalidatePath("/dashboard/profile");
 }

@@ -3,12 +3,15 @@ import ProfileSettings from "@/components/member/ProfileSettings";
 import { getCurrentMemberSession } from "@/lib/auth/session";
 import { getMemberRepository } from "@/lib/data";
 import { getAuthenticatedMemberProfile } from "@/lib/data/member-profile";
+import { auth } from "@/lib/auth/server";
+import { signOutOtherSessions } from "./actions";
 
 export default async function ProfilePage() {
   const session = await getCurrentMemberSession();
-  const [member, initialProfile] = await Promise.all([
+  const [member, initialProfile, sessionResult] = await Promise.all([
     getMemberRepository().getMemberSummary(),
     getAuthenticatedMemberProfile(),
+    auth.listSessions(),
   ]);
 
   return (
@@ -35,6 +38,10 @@ export default async function ProfilePage() {
           <div className="benefitItem"><span>Signed-in email</span><strong>{session?.email ?? "Not available"}</strong></div>
           <div className="benefitItem"><span>Account name</span><strong>{session?.displayName ?? `${member.firstName} ${member.lastInitial}`}</strong></div>
           <div className="benefitItem"><span>Authentication</span><strong>Neon Auth</strong></div>
+          <div className="benefitItem"><span>Active sessions</span><strong>{sessionResult.data?.length ?? 1}</strong></div>
+          <form action={signOutOtherSessions} style={{ marginTop: "18px" }}>
+            <button className="button secondary full" type="submit">Sign out other sessions</button>
+          </form>
         </article>
       </section>
 
