@@ -4,19 +4,23 @@ import "./claims/claims.css";
 import { getMemberRepository } from "@/lib/data";
 import { getCurrentMemberSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
+import { getMemberAccessDestination } from "@/lib/auth/member-access";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getCurrentMemberSession();
-  if (!session) redirect("/signin");
-  if (!session.emailVerified) redirect(`/verify-email?email=${encodeURIComponent(session.email)}`);
+  const initialDestination = getMemberAccessDestination(session, true);
+  if (initialDestination === "/signin") redirect(initialDestination);
+  if (initialDestination === "/verify-email") redirect(`/verify-email?email=${encodeURIComponent(session!.email)}`);
 
   let member;
   try {
     member = await getMemberRepository().getMemberSummary();
   } catch (error) {
-    if (error instanceof Error && error.message.includes("not linked")) redirect("/enroll");
+    if (error instanceof Error && error.message.includes("not linked")) {
+      redirect(getMemberAccessDestination(session, false));
+    }
     throw error;
   }
   return (

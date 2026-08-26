@@ -21,6 +21,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      - run: npm run test:security
       - run: npm run build
         env:
           VEYRA_DATA_PROVIDER: data-api

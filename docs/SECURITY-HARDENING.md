@@ -125,6 +125,7 @@ Run before security-relevant releases:
 ```bash
 npm run typecheck
 npm test
+npm run test:security
 npm run build
 ```
 
@@ -164,7 +165,7 @@ Before each production release:
 ## Remaining hardening backlog
 
 - Confirm password-reset completion revokes existing sessions according to Neon Auth production configuration.
-- Add automated browser-level two-user isolation tests.
+- Add credentialed browser-level two-user isolation tests in a protected test environment; CI currently covers access-state routing and member-scoped repositories without storing real credentials or OTPs.
 - Add explicit tests for benefits, profile, pharmacy preference, and activity isolation.
 - Add failed-sign-in audit telemetry with rate limiting and without leaking credentials.
 - Define audit retention, access-review, export, and deletion policies.
@@ -181,3 +182,4 @@ Before each production release:
 | 2026-08-26 | Created the register after production two-user isolation, account recovery, session-control, and audit verification. |
 | 2026-08-26 | Added a Profile email-OTP request and code-entry workflow after distinguishing reset emails from verification codes. |
 | 2026-08-26 | Enforced verification before protected member access and redirected unlinked accounts to enrollment. |
+| 2026-08-26 | Added CI security regression tests for authentication, verification, enrollment routing, and member-scoped repositories. |
