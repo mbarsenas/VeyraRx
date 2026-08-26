@@ -27,6 +27,8 @@ The browser never chooses the trusted `member_id`. Server-side code resolves it 
 - Password recovery uses Neon Auth reset tokens.
 - Password-reset responses avoid revealing whether an email address exists.
 - Signup requests email verification.
+- New signups must complete email verification before enrollment or dashboard access.
+- Authenticated but unlinked users are redirected to enrollment instead of receiving a server error.
 - Signed-in members can request a new verification email from Profile.
 - Passwords and reset tokens are never written to application audit metadata.
 
@@ -178,3 +180,4 @@ Before each production release:
 | --- | --- |
 | 2026-08-26 | Created the register after production two-user isolation, account recovery, session-control, and audit verification. |
 | 2026-08-26 | Added a Profile email-OTP request and code-entry workflow after distinguishing reset emails from verification codes. |
+| 2026-08-26 | Enforced verification before protected member access and redirected unlinked accounts to enrollment. |

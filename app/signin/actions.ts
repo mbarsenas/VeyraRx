@@ -18,5 +18,6 @@ export async function signInWithEmail(
   if (error) return { error: error.message || "Failed to sign in." };
   const session = await getCurrentMemberSession();
   await recordAuthEvent("sign_in_succeeded", session?.memberId ?? data?.user?.id, { email });
+  if (session && !session.emailVerified) redirect(`/verify-email?email=${encodeURIComponent(email)}`);
   redirect("/dashboard");
 }

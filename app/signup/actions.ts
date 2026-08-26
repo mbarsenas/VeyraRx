@@ -17,8 +17,8 @@ export async function signUpWithEmail(
   const { data, error } = await auth.signUp.email({ email, name, password });
   if (error) return { error: error.message || "Failed to create account." };
 
-  await auth.sendVerificationEmail({ email, callbackURL: "/dashboard" });
+  await auth.emailOtp.sendVerificationOtp({ email, type: "email-verification" });
   await recordAuthEvent("account_created", data?.user?.id, { email: email.toLowerCase() });
   await recordAuthEvent("verification_email_requested", data?.user?.id, { email: email.toLowerCase() });
-  redirect("/signin?verification=sent");
+  redirect(`/verify-email?email=${encodeURIComponent(email)}`);
 }
