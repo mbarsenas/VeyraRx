@@ -50,3 +50,15 @@ export async function signOutOtherSessions() {
   await recordAuthEvent("other_sessions_revoked", session?.memberId);
   revalidatePath("/dashboard/profile");
 }
+
+export async function sendMemberVerificationEmail() {
+  const session = await getCurrentMemberSession();
+  if (!session?.email) throw new Error("A signed-in email address is required.");
+  const { error } = await auth.sendVerificationEmail({
+    email: session.email,
+    callbackURL: "/dashboard/profile?verified=1",
+  });
+  if (error) throw new Error(error.message || "Unable to send verification email.");
+  await recordAuthEvent("verification_email_requested", session.memberId, { email: session.email.toLowerCase() });
+  revalidatePath("/dashboard/profile");
+}
