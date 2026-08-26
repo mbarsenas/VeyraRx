@@ -62,7 +62,7 @@ export const prescriptions: Prescription[] = [
     refillsRemaining: 3,
     lastFill: "May 14, 2026",
     nextRefill: "Aug 12, 2026",
-    pharmacy: "VeyraRx Home Delivery",
+    pharmacy: "SmarteRX Home Delivery",
     coverageTier: "Tier 1 - Generic",
     estimatedCost: "$12.00",
     primaryActionLabel: "Track order",

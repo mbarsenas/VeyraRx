@@ -100,7 +100,7 @@ export const pbmDemoScenarios: PbmDemoScenario[] = [
     id: "specialty-cost",
     title: "High-cost / specialty",
     memberLabel: "Scenario D",
-    summary: "Reviewer examines how VeyraRx should present expensive therapy, specialty benefit design, coinsurance and network restrictions without implying live adjudication.",
+    summary: "Reviewer examines how SmarteRX should present expensive therapy, specialty benefit design, coinsurance and network restrictions without implying live adjudication.",
     focus: "Specialty-tier presentation, percentage cost share, fulfillment restrictions and high-cost member guidance.",
     highlights: ["Specialty tier", "Coinsurance", "Restricted network", "High member-cost sensitivity"],
     routes: ["/dashboard/benefits", "/dashboard/benefits/formulary", "/dashboard/pharmacy", "/pricing"],

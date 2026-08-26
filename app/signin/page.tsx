@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signInWithEmail } from "./actions";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function SignIn() {
   const [state, formAction, isPending] = useActionState(signInWithEmail, null);
 
   return <main className="signinWrap">
     <form className="signinCard" action={formAction}>
-      <div className="brandMark big" aria-hidden="true"><span className="brandV">V</span><span className="brandRx">Rx</span></div>
+      <BrandLogo />
       <h1>Welcome back</h1><p>Sign in to manage prescriptions, benefits and orders.</p>
       <label htmlFor="email">Email address</label><input id="email" name="email" type="email" placeholder="you@example.com" required />
       <label htmlFor="password">Password</label><input id="password" name="password" type="password" placeholder="Password" required />

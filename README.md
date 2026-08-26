@@ -1,4 +1,4 @@
-# VeyraRx Web Prototype
+# SmarteRX Web Prototype
 
 Original Next.js concept inspired by modern pharmacy-benefit websites.
 

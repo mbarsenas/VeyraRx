@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -23,11 +24,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       <header>
         <div className="shell nav">
           <Link href="/" className="brand">
-            <span className="brandMark" aria-hidden="true">
-              <span className="brandV">V</span>
-              <span className="brandRx">Rx</span>
-            </span>
-            <strong>VeyraRx</strong>
+            <BrandLogo compact />
           </Link>
 
           <nav>
@@ -50,11 +47,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         <div className="shell footerGrid">
           <div>
             <div className="brand footerBrand">
-              <span className="brandMark" aria-hidden="true">
-                <span className="brandV">V</span>
-                <span className="brandRx">Rx</span>
-              </span>
-              <strong>VeyraRx</strong>
+              <BrandLogo compact />
             </div>
             <p>Making pharmacy benefits easier to navigate.</p>
           </div>
@@ -75,7 +68,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         </div>
 
         <div className="shell copyright">
-          Copyright 2026 VeyraRx. Prototype concept. All rights reserved.
+          Copyright 2026 SmarteRX. Prototype concept. All rights reserved.
         </div>
       </footer>
     </>

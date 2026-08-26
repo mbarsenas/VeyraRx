@@ -90,7 +90,7 @@ export default function ProfileSettings({ initialProfile }: { initialProfile: Me
         {status && <p className="railText" style={{ marginTop: "12px" }}>{status}</p>}
 
         <div className="workflowNotice" style={{ marginTop: "24px" }}>
-          Changes are stored in your linked VeyraRx member record.
+          Changes are stored in your linked SmarteRX member record.
         </div>
       </section>
     </div>

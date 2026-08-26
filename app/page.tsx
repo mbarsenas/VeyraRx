@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 
 function ActionIcon({ type }: { type: "package" | "pill" | "card" | "pin" }) {
   const common = {
@@ -67,7 +68,7 @@ export default function Home() {
             <span className="eyebrow">Pharmacy benefits made simpler</span>
             <h1>Medication access that puts people first.</h1>
             <p className="lead">
-              VeyraRx brings prescriptions, pricing, benefits and pharmacy tools into one
+              SmarteRX brings prescriptions, pricing, benefits and pharmacy tools into one
               clear experience built around the member.
             </p>
             <div className="buttonRow">
@@ -115,9 +116,8 @@ export default function Home() {
         <div className="shell splitGrid">
           <div className="deliveryVisual" aria-hidden="true">
             <div className="deliveryBadge">Free standard delivery</div>
-            <div className="deliveryPackage">
-              <span className="deliveryPackageMark">V</span>
-              <span className="deliveryPackageName">VeyraRx</span>
+            <div className="deliveryBrandPanel">
+              <BrandLogo />
               <small>Home delivery</small>
             </div>
             <div className="deliveryPill deliveryPillOne" />
