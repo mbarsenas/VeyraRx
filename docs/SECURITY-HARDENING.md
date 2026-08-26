@@ -31,6 +31,8 @@ The browser never chooses the trusted `member_id`. Server-side code resolves it 
 - Authenticated but unlinked users are redirected to enrollment instead of receiving a server error.
 - Signed-in members can request a new verification email from Profile.
 - Passwords and reset tokens are never written to application audit metadata.
+- Shared database-backed controls limit failed sign-ins to five per email in 15 minutes, verification-email requests to three per email in 15 minutes, and password-reset requests to three per email per hour.
+- Password-reset rate-limit responses remain indistinguishable for registered and unregistered addresses.
 
 ### Member isolation and authorization
 
@@ -64,14 +66,19 @@ Current event types:
 | `email_verified` | Neon Auth user ID | Normalized email |
 | `sign_in_succeeded` | Neon Auth user ID from the established session | Normalized email |
 | `sign_in_failed` | Not asserted because authentication did not succeed | Normalized email, generic failure category, authentication method |
+| `sign_in_rate_limited` | Not asserted because authentication did not succeed | Normalized email |
 | `sign_out` | Neon Auth user ID | None |
 | `password_reset_requested` | Not asserted, to prevent account enumeration | Normalized submitted email |
+| `password_reset_rate_limited` | Not asserted, to prevent account enumeration | Normalized submitted email |
 | `password_reset_completed` | Not asserted by the token-only reset flow | None |
 | `other_sessions_revoked` | Neon Auth user ID | None |
+| `verification_email_rate_limited` | Neon Auth user ID when available | Normalized email |
 
 Audit logging is best effort: authentication must not fail solely because audit storage is temporarily unavailable. Failures are emitted to protected server logs as `Unable to record authentication audit event`.
 
 Failed-sign-in records intentionally omit submitted passwords, provider error messages, cookies, tokens, and verification codes. The generic failure category avoids turning the audit trail into an account-enumeration or credential-disclosure channel.
+
+Rate-limit checks use the protected audit table so enforcement is shared across serverless instances. If that storage check is unavailable, the request is allowed and a protected server error is emitted; this availability-first fallback must be monitored through deployment logs and the daily audit report.
 
 ### Database protections
 
@@ -123,6 +130,7 @@ The repository test suite verifies:
 - Data API orders and messages are member scoped.
 - PostgreSQL order and message fallbacks retain member scoping.
 - Failed-sign-in metadata is normalized and restricted to approved fields.
+- Authentication rate-limit thresholds, normalization, blocking, and storage-failure behavior are covered by automated tests.
 
 Run before security-relevant releases:
 
@@ -143,6 +151,7 @@ The production build requires non-secret configuration values at build time. Rea
 - `010_member_claims.sql` — member claims and claim RLS
 - `011_auth_audit_events.sql` — authentication audit storage
 - `011_smarterx_brand.sql` — member-facing SmarteRX data branding
+- `012_auth_rate_limit_index.sql` — indexed audit lookups for shared authentication rate limits
 
 ### Security-related commits
 
@@ -171,7 +180,7 @@ Before each production release:
 - Confirm password-reset completion revokes existing sessions according to Neon Auth production configuration.
 - Add credentialed browser-level two-user isolation tests in a protected test environment; CI currently covers access-state routing and member-scoped repositories without storing real credentials or OTPs.
 - Add explicit tests for benefits, profile, pharmacy preference, and activity isolation.
-- Add rate limiting for sign-in, email-verification, and password-reset requests.
+- Add IP- or device-aware abuse controls if production traffic shows distributed attacks against many email addresses.
 - Define audit retention, access-review, export, and deletion policies.
 - Add alerting for repeated authentication failures and audit-write failures.
 - Add Content Security Policy and review other production security headers.
@@ -188,3 +197,4 @@ Before each production release:
 | 2026-08-26 | Enforced verification before protected member access and redirected unlinked accounts to enrollment. |
 | 2026-08-26 | Added CI security regression tests for authentication, verification, enrollment routing, and member-scoped repositories. |
 | 2026-08-26 | Added privacy-limited `sign_in_failed` audit telemetry and regression coverage. |
+| 2026-08-26 | Added shared rate limiting for sign-in, verification-email, and password-reset requests. |

@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth/server";
 import { getCurrentMemberSession } from "@/lib/auth/session";
 import { recordAuthEvent } from "@/lib/auth/audit";
 import { revalidatePath } from "next/cache";
+import { authRateLimitPolicies, checkAuthRateLimit } from "@/lib/auth/rate-limit";
 
 export type SaveProfileResult = {
   ok: boolean;
@@ -54,6 +55,11 @@ export async function signOutOtherSessions() {
 export async function sendMemberVerificationEmail() {
   const session = await getCurrentMemberSession();
   if (!session?.email) throw new Error("A signed-in email address is required.");
+  const rateLimit = await checkAuthRateLimit(session.email, authRateLimitPolicies.verificationEmail);
+  if (!rateLimit.allowed) {
+    await recordAuthEvent("verification_email_rate_limited", session.memberId, { email: session.email.toLowerCase() });
+    throw new Error("Too many verification codes were requested. Please wait 15 minutes and try again.");
+  }
   const { error } = await auth.emailOtp.sendVerificationOtp({
     email: session.email,
     type: "email-verification",

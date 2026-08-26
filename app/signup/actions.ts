@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth/server";
 import { redirect } from "next/navigation";
 import { recordAuthEvent } from "@/lib/auth/audit";
+import { authRateLimitPolicies, checkAuthRateLimit } from "@/lib/auth/rate-limit";
 
 export async function signUpWithEmail(
   _prevState: { error: string } | null,
@@ -17,8 +18,14 @@ export async function signUpWithEmail(
   const { data, error } = await auth.signUp.email({ email, name, password });
   if (error) return { error: error.message || "Failed to create account." };
 
-  await auth.emailOtp.sendVerificationOtp({ email, type: "email-verification" });
-  await recordAuthEvent("account_created", data?.user?.id, { email: email.toLowerCase() });
-  await recordAuthEvent("verification_email_requested", data?.user?.id, { email: email.toLowerCase() });
+  const normalizedEmail = email.toLowerCase();
+  await recordAuthEvent("account_created", data?.user?.id, { email: normalizedEmail });
+  const verificationRateLimit = await checkAuthRateLimit(normalizedEmail, authRateLimitPolicies.verificationEmail);
+  if (verificationRateLimit.allowed) {
+    await auth.emailOtp.sendVerificationOtp({ email, type: "email-verification" });
+    await recordAuthEvent("verification_email_requested", data?.user?.id, { email: normalizedEmail });
+  } else {
+    await recordAuthEvent("verification_email_rate_limited", data?.user?.id, { email: normalizedEmail });
+  }
   redirect(`/verify-email?email=${encodeURIComponent(email)}`);
 }

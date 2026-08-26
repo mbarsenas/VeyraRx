@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth/server";
 import { recordAuthEvent } from "@/lib/auth/audit";
 import { redirect } from "next/navigation";
+import { authRateLimitPolicies, checkAuthRateLimit } from "@/lib/auth/rate-limit";
 
 export async function sendVerificationCode(
   _previous: { message?: string; error?: string } | null,
@@ -10,6 +11,11 @@ export async function sendVerificationCode(
 ) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   if (!email) return { error: "Email is required." };
+  const rateLimit = await checkAuthRateLimit(email, authRateLimitPolicies.verificationEmail);
+  if (!rateLimit.allowed) {
+    await recordAuthEvent("verification_email_rate_limited", undefined, { email });
+    return { error: "Too many verification codes were requested. Please wait 15 minutes and try again." };
+  }
   const { error } = await auth.emailOtp.sendVerificationOtp({ email, type: "email-verification" });
   if (error) return { error: error.message || "Unable to send verification code." };
   await recordAuthEvent("verification_email_requested", undefined, { email });

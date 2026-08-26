@@ -9,7 +9,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test test/**/*.test.ts",
-    "test:security": "tsx --test test/auth-audit.test.ts test/member-access.test.ts test/member-claims.test.ts test/member-production-data.test.ts",
+    "test:security": "tsx --test test/auth-audit.test.ts test/auth-rate-limit.test.ts test/member-access.test.ts test/member-claims.test.ts test/member-production-data.test.ts",
     "check:prod-data": "node -e \"const p=process.env.VEYRA_DATA_PROVIDER;if(process.env.NODE_ENV==='production'&&p!=='data-api'){console.error('Production requires VEYRA_DATA_PROVIDER=data-api');process.exit(1)}\""
   },
   "dependencies": {

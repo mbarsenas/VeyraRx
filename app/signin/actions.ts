@@ -4,12 +4,18 @@ import { auth } from "@/lib/auth/server";
 import { redirect } from "next/navigation";
 import { createSignInFailureMetadata, recordAuthEvent } from "@/lib/auth/audit";
 import { getCurrentMemberSession } from "@/lib/auth/session";
+import { authRateLimitPolicies, checkAuthRateLimit } from "@/lib/auth/rate-limit";
 
 export async function signInWithEmail(
   _prevState: { error: string } | null,
   formData: FormData
 ) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const rateLimit = await checkAuthRateLimit(email, authRateLimitPolicies.signIn);
+  if (!rateLimit.allowed) {
+    await recordAuthEvent("sign_in_rate_limited", undefined, { email });
+    return { error: "Too many unsuccessful sign-in attempts. Please wait 15 minutes and try again." };
+  }
   const { data, error } = await auth.signIn.email({
     email,
     password: String(formData.get("password") ?? ""),
