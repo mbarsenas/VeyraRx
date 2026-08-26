@@ -8,12 +8,13 @@ export async function signInWithEmail(
   _prevState: { error: string } | null,
   formData: FormData
 ) {
-  const { error } = await auth.signIn.email({
-    email: String(formData.get("email") ?? ""),
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const { data, error } = await auth.signIn.email({
+    email,
     password: String(formData.get("password") ?? ""),
   });
 
   if (error) return { error: error.message || "Failed to sign in." };
-  await recordAuthEvent("sign_in_succeeded", undefined, { email: String(formData.get("email") ?? "").trim().toLowerCase() });
+  await recordAuthEvent("sign_in_succeeded", data?.user?.id, { email });
   redirect("/dashboard");
 }
