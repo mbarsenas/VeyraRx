@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { enrollMember } from "./actions";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function EnrollPage() {
   const [state, formAction, isPending] = useActionState(enrollMember, null);
@@ -9,7 +10,7 @@ export default function EnrollPage() {
   return (
     <main className="signinWrap">
       <form className="signinCard" action={formAction}>
-        <div className="brandMark big" aria-hidden="true"><span className="brandV">V</span><span className="brandRx">Rx</span></div>
+        <BrandLogo />
         <h1>Connect your member account</h1>
         <p>Your SmarteRX sign-in is active. Enter the one-time enrollment code associated with your member record.</p>
 
