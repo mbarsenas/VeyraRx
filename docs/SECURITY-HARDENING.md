@@ -63,12 +63,15 @@ Current event types:
 | `verification_email_requested` | Neon Auth user ID when returned | Normalized email |
 | `email_verified` | Neon Auth user ID | Normalized email |
 | `sign_in_succeeded` | Neon Auth user ID from the established session | Normalized email |
+| `sign_in_failed` | Not asserted because authentication did not succeed | Normalized email, generic failure category, authentication method |
 | `sign_out` | Neon Auth user ID | None |
 | `password_reset_requested` | Not asserted, to prevent account enumeration | Normalized submitted email |
 | `password_reset_completed` | Not asserted by the token-only reset flow | None |
 | `other_sessions_revoked` | Neon Auth user ID | None |
 
 Audit logging is best effort: authentication must not fail solely because audit storage is temporarily unavailable. Failures are emitted to protected server logs as `Unable to record authentication audit event`.
+
+Failed-sign-in records intentionally omit submitted passwords, provider error messages, cookies, tokens, and verification codes. The generic failure category avoids turning the audit trail into an account-enumeration or credential-disclosure channel.
 
 ### Database protections
 
@@ -119,6 +122,7 @@ The repository test suite verifies:
 - PostgreSQL claim fallback retains member scoping.
 - Data API orders and messages are member scoped.
 - PostgreSQL order and message fallbacks retain member scoping.
+- Failed-sign-in metadata is normalized and restricted to approved fields.
 
 Run before security-relevant releases:
 
@@ -167,7 +171,7 @@ Before each production release:
 - Confirm password-reset completion revokes existing sessions according to Neon Auth production configuration.
 - Add credentialed browser-level two-user isolation tests in a protected test environment; CI currently covers access-state routing and member-scoped repositories without storing real credentials or OTPs.
 - Add explicit tests for benefits, profile, pharmacy preference, and activity isolation.
-- Add failed-sign-in audit telemetry with rate limiting and without leaking credentials.
+- Add rate limiting for sign-in, email-verification, and password-reset requests.
 - Define audit retention, access-review, export, and deletion policies.
 - Add alerting for repeated authentication failures and audit-write failures.
 - Add Content Security Policy and review other production security headers.
@@ -183,3 +187,4 @@ Before each production release:
 | 2026-08-26 | Added a Profile email-OTP request and code-entry workflow after distinguishing reset emails from verification codes. |
 | 2026-08-26 | Enforced verification before protected member access and redirected unlinked accounts to enrollment. |
 | 2026-08-26 | Added CI security regression tests for authentication, verification, enrollment routing, and member-scoped repositories. |
+| 2026-08-26 | Added privacy-limited `sign_in_failed` audit telemetry and regression coverage. |
