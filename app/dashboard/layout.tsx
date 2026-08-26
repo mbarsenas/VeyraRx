@@ -1,13 +1,15 @@
 import MemberSidebar from "@/components/member/MemberSidebar";
 import "./member-shell.css";
 import "./claims/claims.css";
+import { getMemberRepository } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const member = await getMemberRepository().getMemberSummary();
   return (
     <main className="memberApp">
-      <MemberSidebar />
+      <MemberSidebar member={member} />
       <section className="memberContent">
         <div className="evaluationBanner" role="note" aria-label="SmarteRX evaluation environment notice">
           <strong>SmarteRX evaluation environment</strong>

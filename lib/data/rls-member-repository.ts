@@ -30,11 +30,7 @@ type FormularyRow = { name: string; strength: string; tier: string; coverage_sta
 type PriorAuthRow = { medication: string; status: string; requirement: string; last_updated: string };
 type ActivityRow = { title: string; display_time: string };
 
-let cachedMember: MemberRow | undefined;
-
 async function getMember(): Promise<MemberRow> {
-  if (cachedMember) return cachedMember;
-
   const session = await getCurrentMemberSession();
   if (!session) throw new Error("An authenticated member session is required.");
 
@@ -50,8 +46,7 @@ async function getMember(): Promise<MemberRow> {
     throw new Error("This authenticated account is not linked to a SmarteRX member record.");
   }
 
-  cachedMember = rows[0];
-  return cachedMember;
+  return rows[0];
 }
 
 async function getPlan(planId: string): Promise<PlanRow> {
@@ -153,7 +148,6 @@ export function createRlsMemberRepository(): MemberRepository {
       const pharmacy = (await dataApiSelect<PharmacyRow>("pharmacies", "id,name,slug,address_line1,city,state,postal_code,distance_label,phone,hours_label,network_status,pickup,ninety_day_eligible,drive_thru", [`id=${eq(id)}`], undefined, 1))[0];
       if (!pharmacy || pharmacy.network_status === "Out of network") throw new Error("The selected pharmacy is not eligible to be preferred.");
       await dataApiUpdate("members", { preferred_pharmacy_id: id, updated_at: new Date().toISOString() }, [`id=${eq(member.id)}`]);
-      cachedMember = { ...member, preferred_pharmacy_id: id };
     },
   };
 }

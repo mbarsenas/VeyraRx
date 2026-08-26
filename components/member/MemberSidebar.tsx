@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { member } from "@/lib/mock-data/member";
 import BrandLogo from "@/components/BrandLogo";
+import type { MemberSummary } from "@/lib/domain/member";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", exact: true },
@@ -17,7 +17,7 @@ const navItems = [
   { href: "/dashboard/profile", label: "Profile" },
 ];
 
-export default function MemberSidebar() {
+export default function MemberSidebar({ member }: { member: MemberSummary }) {
   const pathname = usePathname();
 
   return (

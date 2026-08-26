@@ -7,17 +7,20 @@ import PharmacyCard from "@/components/member/PharmacyCard";
 import ActivityTimeline from "@/components/member/ActivityTimeline";
 import PbmScenarioPanel from "@/components/member/PbmScenarioPanel";
 import { getMemberRepository } from "@/lib/data";
-import { getAuthenticatedMemberClaims } from "@/lib/data/member-claims";
+import { getAuthenticatedMemberClaimAccumulators, getAuthenticatedMemberClaims } from "@/lib/data/member-claims";
 
 export default async function DashboardPage() {
   const repository = getMemberRepository();
-  const [member, prescriptions, claims] = await Promise.all([
+  const [member, prescriptions, claims, activity, accumulators] = await Promise.all([
     repository.getMemberSummary(),
     repository.getPrescriptions(),
     getAuthenticatedMemberClaims(),
+    repository.getRecentActivity(),
+    getAuthenticatedMemberClaimAccumulators(),
   ]);
 
-  const deductiblePercent = Math.round((member.plan.deductibleUsed / member.plan.deductibleTotal) * 100);
+  const deductibleUsed = accumulators.deductibleCents / 100;
+  const deductiblePercent = member.plan.deductibleTotal > 0 ? Math.round((deductibleUsed / member.plan.deductibleTotal) * 100) : 0;
   const refillCount = prescriptions.filter((rx) => rx.status === "Refill available").length;
   const processingCount = prescriptions.filter((rx) => rx.status === "Processing").length;
 
@@ -35,7 +38,7 @@ export default async function DashboardPage() {
         <SummaryCard label="Orders in progress" value={processingCount} detail="Estimated arrival Aug 14" />
         <SummaryCard
           label="Plan deductible"
-          value={`$${member.plan.deductibleUsed} / $${member.plan.deductibleTotal.toLocaleString()}`}
+          value={`$${deductibleUsed.toLocaleString()} / $${member.plan.deductibleTotal.toLocaleString()}`}
           detail={`${deductiblePercent}% met`}
           progressPercent={deductiblePercent}
         />
@@ -54,7 +57,7 @@ export default async function DashboardPage() {
             </div>
           </article>
 
-          <ActivityTimeline />
+          <ActivityTimeline activity={activity} />
           <article className="panelCard">
             <div className="panelHeader">
               <div><span className="eyebrow">Recent claims</span><h2>Latest pharmacy activity</h2></div>
@@ -73,8 +76,8 @@ export default async function DashboardPage() {
         </div>
 
         <aside className="dashboardRail">
-          <PlanCard />
-          <PharmacyCard />
+          <PlanCard plan={member.plan} />
+          <PharmacyCard pharmacy={member.preferredPharmacy} />
           <article className="panelCard savingsCard">
             <span className="eyebrow">Savings opportunity</span>
             <h2>Save on a 90-day supply</h2>
