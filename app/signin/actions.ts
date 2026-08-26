@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth/server";
 import { redirect } from "next/navigation";
 import { recordAuthEvent } from "@/lib/auth/audit";
+import { getCurrentMemberSession } from "@/lib/auth/session";
 
 export async function signInWithEmail(
   _prevState: { error: string } | null,
@@ -15,6 +16,7 @@ export async function signInWithEmail(
   });
 
   if (error) return { error: error.message || "Failed to sign in." };
-  await recordAuthEvent("sign_in_succeeded", data?.user?.id, { email });
+  const session = await getCurrentMemberSession();
+  await recordAuthEvent("sign_in_succeeded", session?.memberId ?? data?.user?.id, { email });
   redirect("/dashboard");
 }
