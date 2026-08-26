@@ -114,14 +114,36 @@ export default function Home() {
 
       <section className="splitSection">
         <div className="shell splitGrid">
-          <div className="deliveryVisual" aria-hidden="true">
-            <div className="deliveryBadge">Free standard delivery</div>
-            <div className="deliveryBrandPanel">
-              <BrandLogo />
-              <small>Home delivery</small>
+          <div className="deliveryVisual">
+            <div className="pharmacyCard" aria-label="Sample SmarteRX prescription benefit card">
+              <div className="pharmacyCardTop">
+                <BrandLogo compact />
+                <div className="pharmacyCardType">
+                  <span>Prescription benefit card</span>
+                  <strong>SmarteChoice Plus</strong>
+                </div>
+              </div>
+              <div className="pharmacyCardMember">
+                <div>
+                  <span>Member name</span>
+                  <strong>Sample Member</strong>
+                </div>
+                <div>
+                  <span>Member ID</span>
+                  <strong>SRX000000001</strong>
+                </div>
+              </div>
+              <div className="pharmacyCardRouting">
+                <div><span>RxBIN</span><strong>610014</strong></div>
+                <div><span>RxPCN</span><strong>SRX</strong></div>
+                <div><span>RxGRP</span><strong>VYR365</strong></div>
+              </div>
+              <div className="pharmacyCardBottom">
+                <span>Present this card when filling prescriptions</span>
+                <strong>Member services&nbsp; 1-800-555-0199</strong>
+              </div>
+              <span className="pharmacyCardSample">SAMPLE</span>
             </div>
-            <div className="deliveryPill deliveryPillOne" />
-            <div className="deliveryPill deliveryPillTwo" />
           </div>
           <div>
             <span className="eyebrow">Home delivery</span>
