@@ -54,11 +54,21 @@ export async function signOutOtherSessions() {
 export async function sendMemberVerificationEmail() {
   const session = await getCurrentMemberSession();
   if (!session?.email) throw new Error("A signed-in email address is required.");
-  const { error } = await auth.sendVerificationEmail({
+  const { error } = await auth.emailOtp.sendVerificationOtp({
     email: session.email,
-    callbackURL: "/dashboard/profile?verified=1",
+    type: "email-verification",
   });
   if (error) throw new Error(error.message || "Unable to send verification email.");
   await recordAuthEvent("verification_email_requested", session.memberId, { email: session.email.toLowerCase() });
+  revalidatePath("/dashboard/profile");
+}
+
+export async function verifyMemberEmail(formData: FormData) {
+  const session = await getCurrentMemberSession();
+  const otp = String(formData.get("verificationCode") ?? "").trim();
+  if (!session?.email || !otp) throw new Error("Email and verification code are required.");
+  const { error } = await auth.emailOtp.verifyEmail({ email: session.email, otp });
+  if (error) throw new Error(error.message || "The verification code is invalid or expired.");
+  await recordAuthEvent("email_verified", session.memberId, { email: session.email.toLowerCase() });
   revalidatePath("/dashboard/profile");
 }

@@ -59,6 +59,7 @@ Current event types:
 | --- | --- | --- |
 | `account_created` | Neon Auth user ID when returned | Normalized email |
 | `verification_email_requested` | Neon Auth user ID when returned | Normalized email |
+| `email_verified` | Neon Auth user ID | Normalized email |
 | `sign_in_succeeded` | Neon Auth user ID from the established session | Normalized email |
 | `sign_out` | Neon Auth user ID | None |
 | `password_reset_requested` | Not asserted, to prevent account enumeration | Normalized submitted email |
@@ -176,4 +177,4 @@ Before each production release:
 | Date | Change |
 | --- | --- |
 | 2026-08-26 | Created the register after production two-user isolation, account recovery, session-control, and audit verification. |
-| 2026-08-26 | Added an explicit Profile verification-email workflow after distinguishing reset emails from verification emails. |
+| 2026-08-26 | Added a Profile email-OTP request and code-entry workflow after distinguishing reset emails from verification codes. |

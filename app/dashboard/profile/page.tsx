@@ -4,7 +4,7 @@ import { getCurrentMemberSession } from "@/lib/auth/session";
 import { getMemberRepository } from "@/lib/data";
 import { getAuthenticatedMemberProfile } from "@/lib/data/member-profile";
 import { auth } from "@/lib/auth/server";
-import { sendMemberVerificationEmail, signOutOtherSessions } from "./actions";
+import { sendMemberVerificationEmail, signOutOtherSessions, verifyMemberEmail } from "./actions";
 
 export default async function ProfilePage() {
   const session = await getCurrentMemberSession();
@@ -43,7 +43,12 @@ export default async function ProfilePage() {
             <button className="button secondary full" type="submit">Sign out other sessions</button>
           </form>
           <form action={sendMemberVerificationEmail} style={{ marginTop: "10px" }}>
-            <button className="button secondary full" type="submit">Send verification email</button>
+            <button className="button secondary full" type="submit">Send verification code</button>
+          </form>
+          <form action={verifyMemberEmail} style={{ marginTop: "10px" }}>
+            <label htmlFor="verificationCode">Email verification code</label>
+            <input id="verificationCode" name="verificationCode" inputMode="numeric" autoComplete="one-time-code" required />
+            <button className="button primary full" type="submit" style={{ marginTop: "10px" }}>Verify email</button>
           </form>
         </article>
       </section>
